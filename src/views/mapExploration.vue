@@ -298,62 +298,62 @@ export default {
     },
     methods: {
         getRandomEvent() {
-    const randomEvents = [
-        {
-            id: 1,
-            name: "神秘老者",
-            description: "你遇到了一位神秘的老者，他声称可以给你一些好处。",
-            options: [
-                { text: "接受老者的馈赠", outcome: "positive" },
-                { text: "婉拒老者的好意", outcome: "neutral" },
-                { text: "质疑老者的动机", outcome: "negative" }
-            ]
-        },
-        {
-            id: 2,
-            name: "古老遗迹",
-            description: "你发现了一处古老的遗迹，里面可能藏有宝物，但也可能有危险。",
-            options: [
-                { text: "深入探索", outcome: "random" },
-                { text: "谨慎观察", outcome: "neutral" },
-                { text: "离开此地", outcome: "neutral" }
-            ]
-        },
-        {
-            id: 3,
-            name: "迷路的商人",
-            description: "你遇到了一位迷路的商人，他提出以优惠的价格卖给你一件物品。",
-            options: [
-                { text: "购买物品", outcome: "positive" },
-                { text: "帮助他指路", outcome: "neutral" },
-                { text: "无视他继续前进", outcome: "negative" }
-            ]
-        },
-        {
-            id: 4,
-            name: "神秘洞穴",
-            description: "你发现了一个神秘的洞穴，洞口散发着奇异的光芒。",
-            options: [
-                { text: "进入洞穴探索", outcome: "random" },
-                { text: "在洞口观察", outcome: "neutral" },
-                { text: "绕道而行", outcome: "neutral" }
-            ]
-        },
-        {
-            id: 5,
-            name: "受伤的妖兽",
-            description: "你遇到了一只受伤的妖兽，它看起来既危险又可怜。",
-            options: [
-                { text: "尝试治疗它", outcome: "random" },
-                { text: "小心地绕过", outcome: "neutral" },
-                { text: "趁机攻击", outcome: "negative" }
-            ]
-        }
-    ];
+            const randomEvents = [
+                {
+                    id: 1,
+                    name: "神秘老者",
+                    description: "你遇到了一位神秘的老者，他声称可以给你一些好处。",
+                    options: [
+                        { text: "接受老者的馈赠", outcome: "positive" },
+                        { text: "婉拒老者的好意", outcome: "neutral" },
+                        { text: "质疑老者的动机", outcome: "negative" }
+                    ]
+                },
+                {
+                    id: 2,
+                    name: "古老遗迹",
+                    description: "你发现了一处古老的遗迹，里面可能藏有宝物，但也可能有危险。",
+                    options: [
+                        { text: "深入探索", outcome: "random" },
+                        { text: "谨慎观察", outcome: "neutral" },
+                        { text: "离开此地", outcome: "neutral" }
+                    ]
+                },
+                {
+                    id: 3,
+                    name: "迷路的商人",
+                    description: "你遇到了一位迷路的商人，他提出以优惠的价格卖给你一件物品。",
+                    options: [
+                        { text: "购买物品", outcome: "positive" },
+                        { text: "帮助他指路", outcome: "neutral" },
+                        { text: "无视他继续前进", outcome: "negative" }
+                    ]
+                },
+                {
+                    id: 4,
+                    name: "神秘洞穴",
+                    description: "你发现了一个神秘的洞穴，洞口散发着奇异的光芒。",
+                    options: [
+                        { text: "进入洞穴探索", outcome: "random" },
+                        { text: "在洞口观察", outcome: "neutral" },
+                        { text: "绕道而行", outcome: "neutral" }
+                    ]
+                },
+                {
+                    id: 5,
+                    name: "受伤的妖兽",
+                    description: "你遇到了一只受伤的妖兽，它看起来既危险又可怜。",
+                    options: [
+                        { text: "尝试治疗它", outcome: "random" },
+                        { text: "小心地绕过", outcome: "neutral" },
+                        { text: "趁机攻击", outcome: "negative" }
+                    ]
+                }
+            ];
 
-    // 随机选择一个事件
-    return randomEvents[Math.floor(Math.random() * randomEvents.length)];
-},
+            // 随机选择一个事件
+            return randomEvents[Math.floor(Math.random() * randomEvents.length)];
+        },
         // 回家
         goHome() {
             this.$router.push('/home');
@@ -659,8 +659,9 @@ export default {
                 map: this.grid
             });
             // 20%概率遇怪
+          
             const encounterRoll = Math.random();
-            console.log(encounterRoll )
+            console.log(encounterRoll)
             if (encounterRoll < 0.2 && playerIndex != 0) {
                 // 玩家境界
                 let level = this.player.level == 0 ? 1 : this.player.level;
@@ -683,12 +684,12 @@ export default {
                 });
                 // 跳转对战
                 this.$router.push('/explore');
-    } else if (0.2<encounterRoll < 0.3 && playerIndex != 0) { // 额外10%概率触发随机事件
-        const randomEvent = this.getRandomEvent(); 
-        this.$store.setRandomEvent(randomEvent);
-        this.$router.push('/explore');
-
-    }
+            } else if (encounterRoll < 0.3 &&  encounterRoll >0.2&& playerIndex != 0) {
+                console.log("触发随机事件")
+                const randomEvent = this.getRandomEvent();
+                this.$store.setRandomEvent(randomEvent);
+                this.$router.push('/explore');
+            }
 
 
             // 每次更新玩家位置后调用

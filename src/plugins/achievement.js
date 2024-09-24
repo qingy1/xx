@@ -112,32 +112,31 @@ const achievement = {
             // 成就名称
             name: '初涉修仙',
             // 成就奖励
-            award: 1000,
+            award: 10,
             //达成条件
             condition: {
                 jishaNum: 1
             }
         },  {
-            // 成就ID
             id: 8,
-            // 成就名称
             name: '百人斩',
-            // 成就奖励
-            award: 1000,
-            //达成条件
+            award: 100,
             condition: {
                 jishaNum: 100
             }
-        },  {
-            // 成就ID
+        },   {
             id: 9,
-            // 成就名称
-            name: '地府常客',
-            // 成就奖励
+            name: '万人屠',
             award: 1000,
-            //达成条件
             condition: {
-                ggNum: 1
+                jishaNum: 10000
+            }
+        },   {
+            id: 10,
+            name: '地府常客',
+            award: 100,
+            condition: {
+                ggNum: 999
             }
         },];
     }

@@ -2,17 +2,7 @@
     <div class="explore">
         <div class="cultivate" v-if="$store.monster.name">
             你遇到了<span class="el-tag el-tag--danger" @click="openMonsterInfo">{{ monster.name }}</span>
-            <div class="storyText">
-                <div class="storyText-box">
-                    <el-scrollbar ref="scrollbar" always>
-                        <p class="fighting" v-if="isFighting">
-                            {{ guashaRounds }}回合 / 10回合
-                        </p>
-                        <p v-for="(item, index) in texts" :key="index" v-html="item"
-                            @click="openEquipmentInfo(openEquipItemInfo)" />
-                    </el-scrollbar>
-                </div>
-            </div>
+
             <div class="actions">
                 <div class="action">
                     <el-button class="item" @click="operate('startFight')" :disabled="isEnd">
@@ -40,19 +30,31 @@
                     </el-button>
                 </div>
             </div>
+            <div class="storyText">
+                <div class="storyText-box">
+                    <el-scrollbar ref="scrollbar" always>
+                        <p class="fighting" v-if="isFighting">
+                            {{ guashaRounds }}回合 / 10回合
+                        </p>
+                        <p v-for="(item, index) in texts" :key="index" v-html="item"
+                            @click="openEquipmentInfo(openEquipItemInfo)" />
+                    </el-scrollbar>
+                </div>
+            </div>
         </div>
 
         <div class="cultivate" v-else-if="isRandomEvent">
             <h2>{{ currentEvent.name }}</h2>
             <p>{{ currentEvent.description }}</p>
             <div class="actions">
-                <div class="action" v-for="option in currentEvent.options" :key="option.text">
+                <div class="action" v-for="(option, index) in currentEvent.options" :key="option.text">
                     <el-button class="item" @click="handleEventOption(option)">
-                        {{ option.text }}
+                        {{ option.text }}<span class="shortcutKeys">({{ index + 1 }})</span>
                     </el-button>
                 </div>
             </div>
         </div>
+
         <div class="cultivate error" v-else>
             <el-result icon="error" title="缺少对战信息" sub-title="请返回地图重新探索">
                 <template #extra>
@@ -113,9 +115,23 @@ export default {
             this.triggerRandomEvent();
         }
         // 添加键盘监听
-        window.addEventListener('keydown', this.operate);
+        window.addEventListener('keydown', this.handleKeyDown);
     },
     methods: {
+        handleKeyDown(event) {
+            if (this.isRandomEvent) {
+                const key = event.key;
+                if (key >= '1' && key <= '3') {
+                    const index = parseInt(key) - 1;
+                    if (index < this.currentEvent.options.length) {
+                        this.handleEventOption(this.currentEvent.options[index]);
+                    }
+                }
+            } else {
+                this.operate(event);
+            }
+        },
+
         // 玩家操作(绑定快捷键)
         triggerRandomEvent() {
             this.isRandomEvent = true;
@@ -123,7 +139,7 @@ export default {
         },
 
         handleEventOption(option) {
-            switch(option.outcome) {
+            switch (option.outcome) {
                 case 'positive':
                     this.handlePositiveOutcome();
                     break;
@@ -139,14 +155,14 @@ export default {
             }
             this.isRandomEvent = false;
             this.currentEvent = null;
-          //  this.$store.commit('setRandomEvent', null);
+            this.$store.setRandomEvent(null);
             this.$router.push('/map');
         },
 
         handlePositiveOutcome() {
             const reward = Math.floor(Math.random() * 1000) + 100;
             this.player.props.money += reward;
-          //  this.$store.commit('setPlayer', this.player);
+            //  this.$store.commit('setPlayer', this.player);
             this.$notify({
                 title: '好运',
                 message: `你获得了 ${reward} 灵石！`,
@@ -157,7 +173,7 @@ export default {
         handleNegativeOutcome() {
             const loss = Math.floor(Math.random() * 500) + 50;
             this.player.props.money = Math.max(0, this.player.props.money - loss);
-           // this.$store.commit('setPlayer', this.player);
+            // this.$store.commit('setPlayer', this.player);
             this.$notify({
                 title: '倒霉',
                 message: `你损失了 ${loss} 灵石！`,
@@ -199,6 +215,14 @@ export default {
                 case 'f':
                 case 'explore':
                     if (this.isEnd) this.$router.push('/map');
+                    this.$store.monster = {
+                        name: '',
+                        health: 0,
+                        attack: 0,
+                        defense: 0,
+                        dodge: 0,
+                        critical: 0
+                    }
                     return;
                 default:
                     return;

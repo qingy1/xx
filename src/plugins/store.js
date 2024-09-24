@@ -62,7 +62,6 @@ export const useMainStore = defineStore('main', {
                 weapon: {},
                 accessory: {}
             },
-            randomEvent: null,
             achievement: {
                 pet: [],
                 monster: [],

@@ -1893,7 +1893,7 @@
         // 打怪成就
         message = `<div class="monsterinfo">
             <div class="monsterinfo-box">
-                <p>需要击杀怪物数量: ${item.condition.taskNum}</p>
+                <p>击杀数: ${item.condition.jishaNum}</p>
                 <p>完成奖励: ${item.award}培养丹</p>
             </div>
         </div>`;
