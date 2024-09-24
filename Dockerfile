@@ -8,9 +8,9 @@ RUN npm config set registry https://registry.npmmirror.com
 
 RUN cd /workspace
 
-RUN git clone https://mirror.ghproxy.com/https://github.com/wenmoux/vue-XiuXianGame.git
+RUN git clone https://mirror.ghproxy.com/https://github.com/wenmoux/xx.git
 
-RUN mv ./vue-XiuXianGame/* . ; rm -rf ./vue-XiuXianGame/
+RUN mv ./xx/* . ; rm -rf ./xx/
 
 RUN npm install -g pnpm ; pnpm install ; npx vite build
 
