@@ -4,6 +4,7 @@ import home from '../views/homePage.vue';
 import index from '../views/indexPage.vue';
 import explore from '../views/explorePage.vue';
 import cultivate from '../views/cultivatePage.vue';
+import LeaderboardView from '@/views/LeaderboardView.vue'
 import { createRouter, createWebHashHistory } from 'vue-router';
 
 const routes = [
@@ -54,7 +55,12 @@ const routes = [
             keepAlive: false
         },
         component: boss
-    }
+    },
+    {
+        path: '/leaderboard',
+        name: 'Leaderboard',
+        component: LeaderboardView
+      }
 ];
 const router = createRouter({
     history: createWebHashHistory(),

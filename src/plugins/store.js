@@ -21,6 +21,8 @@ export const useMainStore = defineStore('main', {
         randomEvent: null,
         // 玩家属性
         player: {
+            id: '',
+            name: '',
             zc: false,
             pet: {},
             dark: false,
@@ -50,7 +52,7 @@ export const useMainStore = defineStore('main', {
             jishaNum:0,
             ggNum: 0,
 
-            version: 0.8,
+            version: 0.9,
             currency: 0,
             maxHealth: 100,
             inventory: [],
