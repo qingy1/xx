@@ -52,7 +52,7 @@ export const useMainStore = defineStore('main', {
             jishaNum:0,
             ggNum: 0,
 
-            version: 0.9,
+            version: 0.91,
             currency: 0,
             maxHealth: 100,
             inventory: [],
