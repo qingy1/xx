@@ -1,7 +1,13 @@
 <template>
     <div class="cultivate">
-        <el-progress :percentage="cultivationPercentage" :format="formatProgress" :stroke-width="20"
-            status="success"></el-progress>
+        <div class="cultivation-info">
+            <div class="realm-display">
+                当前境界：<span class="realm-text">{{ $levelNames(player.level) }} ({{ player.reincarnation || 0 }}转)</span>
+            </div>
+            <el-progress :percentage="cultivationPercentage" :format="formatProgress" :stroke-width="20"
+                status="success" class="custom-progress"></el-progress>
+
+        </div>
         <div class="storyText">
             <div class="storyText-box">
                 <el-scrollbar ref="scrollbar" always>
@@ -45,8 +51,7 @@ export default {
             isStop: false,
             isStart: false,
             timerIds: [],
-            observer: null // 用于保存 MutationObserver 实例
-            ,
+            observer: null,
             randomEvents: [
                 { type: 'resource', name: '灵石', amount: 100, description: '你发现了一堆灵石！' },
                 { type: 'cultivation', name: '顿悟', amount: 500, description: '你突然顿悟，修为大涨！' },
@@ -83,7 +88,6 @@ export default {
                     const exp = this.player.level <= 10 ? Math.floor(this.player.maxCultivation / equip.getRandomInt(10, 30)) : Math.floor(this.player.maxCultivation / 100);
                     this.texts = [...this.texts, this.player.level < this.$maxLv ? '你开始冥想，吸收周围的灵气。修为提升了！' : '你当前的境界已修炼圆满, 需要转生后才能继续修炼'];
                     this.breakThrough(exp);
-
                     // 添加随机事件逻辑
                     if (Math.random() < 0.1) {  // 10%的概率触发随机事件
                         this.triggerRandomEvent();
@@ -107,15 +111,12 @@ export default {
                     this.player.cultivation += event.amount;
                     break;
                 case 'item':
-                    // 这里可以添加获得物品的逻辑
-                    this.player.cultivation += 100;  // 简化处理，直接增加修为
+                    this.player.cultivation += this.player.cultivation * 0.05;  // 简化处理，直接增加修为
                     break;
                 case 'lucky':
-                    // 这里可以添加获得物品的逻辑
                     this.player.cultivation -= this.player.cultivation * 0.1;  // 简化处理，直接减少修为
                     break;
                 case 'skill':
-                    // 这里可以添加学习技能的逻辑
                     this.player.attack *= 1.1;  // 简化处理，直接增加攻击力
                     break;
             }
@@ -230,6 +231,40 @@ export default {
 </script>
 
 <style scoped>
+.cultivate {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+    /* 或者您想要的最大宽度 */
+    margin: 0 auto;
+}
+
+.cultivation-info {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.custom-progress {
+    width: 100%;
+}
+
+.realm-display {
+    margin-bottom: 10px;
+    font-size: 16px;
+    text-align: center;
+}
+
+.realm-text {
+    color: #409EFF;
+    font-weight: bold;
+}
+
+.storyText {
+    width: 100%;
+}
+
 .storyText-box {
     max-height: 300px;
     overflow-y: auto;
@@ -237,10 +272,38 @@ export default {
     border: 1px solid #dcdfe6;
     border-radius: 4px;
     margin-bottom: 20px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.actions {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.action {
+    flex: 1;
+    margin: 0 5px;
+}
+
+.item {
+    width: 100%;
 }
 
 .event-text {
     color: #E6A23C;
     font-weight: bold;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .actions {
+        flex-direction: column;
+    }
+
+    .action {
+        margin: 5px 0;
+    }
 }
 </style>

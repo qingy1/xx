@@ -5,6 +5,7 @@ import index from '../views/indexPage.vue';
 import explore from '../views/explorePage.vue';
 import cultivate from '../views/cultivatePage.vue';
 import LeaderboardView from '@/views/LeaderboardView.vue'
+import tower from '@/views/EndlessTower.vue'
 import { createRouter, createWebHashHistory } from 'vue-router';
 
 const routes = [
@@ -60,6 +61,11 @@ const routes = [
         path: '/leaderboard',
         name: 'Leaderboard',
         component: LeaderboardView
+      },
+      {
+        path: '/tower',
+        name: 'tower',
+        component: tower
       }
 ];
 const router = createRouter({

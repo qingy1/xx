@@ -15,16 +15,15 @@
                             <Edit />
                         </el-icon>
                     </div>
-
+                    <div class="tag attribute" @click="isLevel = true">
+                        无尽塔: {{ player.highestTowerFloor  || 1 }}层
+                        <el-icon>
+                        </el-icon>
+                    </div>
                     <div class="tag attribute" @click="isLevel = true">
                         境界: {{ $levelNames(player.level) }} ({{ player.reincarnation || 0 }}转)
                         <el-icon>
                             <Warning />
-                        </el-icon>
-                    </div>
-                    <div class="tag attribute" @click="isLevel = true">
-                        击杀数: {{ player.jishaNum || 0 }}
-                        <el-icon>
                         </el-icon>
                     </div>
                     <div class="tag attribute" v-if="player.level >= this.$maxLv">
@@ -981,6 +980,7 @@ export default {
                 // 批量分解装备设置
                 sellingEquipmentData: [],
                 isNameDialogVisible: false,
+                highestTowerFloor:1
             },
             actions: [],
             isLevel: false,
@@ -1168,7 +1168,10 @@ export default {
                         this.equipAllShow = true;
                     }
                 },
-                { text: '世界BOSS', handler: () => this.$router.push('/boss') }
+                { text: '世界BOSS', handler: () => this.$router.push('/boss') },
+                { text: '排行榜', handler: () => this.$router.push('/leaderboard') },
+                { text: '无尽塔', handler: () => this.$router.push('/tower') },
+                { text: '还有啥', handler: () => this.$router.push('/tower') }
             ];
             // 初始化玩家当前气血
             this.player.health = this.player.maxHealth;
