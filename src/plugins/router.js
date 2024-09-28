@@ -4,8 +4,8 @@ import home from '../views/homePage.vue';
 import index from '../views/indexPage.vue';
 import explore from '../views/explorePage.vue';
 import cultivate from '../views/cultivatePage.vue';
-import LeaderboardView from '@/views/LeaderboardView.vue'
-import tower from '@/views/EndlessTower.vue'
+import game from '../views/game.vue'
+import endlesstower from '../views/endlessPage.vue'
 import { createRouter, createWebHashHistory } from 'vue-router';
 
 const routes = [
@@ -58,15 +58,21 @@ const routes = [
         component: boss
     },
     {
-        path: '/leaderboard',
-        name: 'Leaderboard',
-        component: LeaderboardView
-      },
-      {
-        path: '/tower',
-        name: 'tower',
-        component: tower
-      }
+        path: '/endlesstower',
+        name: 'endlesstower',
+        meta: {
+            keepAlive: false
+        },
+        component: endlesstower
+    },
+    {
+        path: '/game',
+        name: 'game',
+        meta: {
+            keepAlive: false
+        },
+        component: game
+    }
 ];
 const router = createRouter({
     history: createWebHashHistory(),

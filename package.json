@@ -1,8 +1,8 @@
 {
     "name": "xiuxian-game",
     "private": true,
-    "version": "0.91",
-    "versionlog": "添加无尽塔副本",
+    "version": "0.9.3",
+    "versionlog": "新增娱乐小游戏",
     "type": "module",
     "scripts": {
         "dev": "vite --open",
@@ -11,7 +11,6 @@
     },
     "dependencies": {
         "@element-plus/icons-vue": "^2.3.1",
-        "@mdi/font": "^7.4.47",
         "autoprefixer": "^10.4.20",
         "crypto-js": "^4.2.0",
         "element-plus": "^2.8.1",
@@ -23,8 +22,7 @@
         "terser": "^5.31.6",
         "unplugin-vue-components": "^0.27.4",
         "vue": "^3.4.37",
-        "vue-router": "^4.4.3",
-        "vuetify": "^3.7.0-beta.1"
+        "vue-router": "^4.4.3"
     },
     "devDependencies": {
         "@vitejs/plugin-vue": "^5.1.3",

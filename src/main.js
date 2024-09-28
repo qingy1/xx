@@ -9,11 +9,6 @@ import ElementPlus, { ElNotification } from 'element-plus';
 import * as ElementPlusIconsVue from '@element-plus/icons-vue';
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
 
-
-// 在组件的 mounted 钩子或者 setup 函数中
-
-
-
 const app = createApp(App);
 
 const pinia = createPinia();
@@ -21,10 +16,6 @@ pinia.use(piniaPluginPersistedstate);
 app.use(pinia);
 
 const store = useMainStore();
-window.debug = {
-    getPlayer: () => store.player,
-    setPlayer: (newPlayer) => store.setPlayer(newPlayer)
-  }
 
 app.config.productionTip = false;
 app.config.globalProperties.$store = store;

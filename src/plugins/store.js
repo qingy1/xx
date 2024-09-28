@@ -18,13 +18,12 @@ export const useMainStore = defineStore('main', {
             critical: 0,
             maxhealth: 0
         },
-        randomEvent: null,
         // 玩家属性
         player: {
-            id: '',
-            name: '',
             zc: false,
+            age: 1,
             pet: {},
+            name: '玩家',
             dark: false,
             npcs: [],
             wife: {},
@@ -47,13 +46,10 @@ export const useMainStore = defineStore('main', {
             health: 100,
             critical: 0,
             defense: 10,
-
             taskNum: 0,
-            jishaNum:0,
-            ggNum: 0,
-
-            version: 0.91,
+            version: "0.9.3",
             currency: 0,
+            energy: 100,
             maxHealth: 100,
             inventory: [],
             isNewbie: false,
@@ -69,12 +65,25 @@ export const useMainStore = defineStore('main', {
                 monster: [],
                 equipment: []
             },
+            script: '',
             cultivation: 0,
             reincarnation: 0,
             maxCultivation: 100,
             backpackCapacity: 50,
             sellingEquipmentData: [],
-            highestTowerFloor:1
+            highestTowerFloor: 1,
+            nextGameTimes: {
+                dice: null,
+                rps: null,
+                fortune: null,
+                gamblingStone: null
+            },
+            checkinStreak: 0,
+            checkinDays: 0,
+            lastCheckinDate: null,
+            fortuneTellingDate: null,
+            gameWins: 0,
+            gameLosses: 0,
         },
         // 怪物信息
         monster: {
@@ -96,32 +105,8 @@ export const useMainStore = defineStore('main', {
             map: []
         },
         mapScroll: 0,
-        randomEvent: null,
         fishingMap: [],
     }),
-    actions: {
-        setBoss (data) {
-            this.boss = data;
-        },
-        setRandomEvent(event) {
-            this.randomEvent = event;
-        },
-        setPlayer (data) {
-            this.player = data;
-        },
-        setMonster (data) {
-            this.monster = data;
-        },
-        setMapData (data) {
-            this.mapData = data;
-        },
-        setMapScroll (data) {
-            this.mapScroll = data;
-        },
-        setFishingMap (data) {
-            this.fishingMap = data;
-        }
-    },
     persist: {
         key: 'vuex',
         paths: ['boss', 'player'],
