@@ -47,7 +47,7 @@ export const useMainStore = defineStore('main', {
             critical: 0,
             defense: 10,
             taskNum: 0,
-            version: "0.9.3",
+            version: 0.8,
             currency: 0,
             energy: 100,
             maxHealth: 100,
@@ -84,6 +84,13 @@ export const useMainStore = defineStore('main', {
             fortuneTellingDate: null,
             gameWins: 0,
             gameLosses: 0,
+            farm: {
+                level: 1,
+                experience: 0,
+                plots: [
+                ],
+                warehouse: {},
+              },
         },
         // 怪物信息
         monster: {
@@ -106,23 +113,24 @@ export const useMainStore = defineStore('main', {
         },
         mapScroll: 0,
         fishingMap: [],
+        
     }),
     persist: {
         key: 'vuex',
-        paths: ['boss', 'player'],
+        paths: ['boss', 'player','farm'],
         storage: localStorage,
         serializer: {
             serialize: (state) => {
                 return JSON.stringify({
                     boss: crypto.encryption(state.boss),
-                    player: crypto.encryption(state.player)
+                    player: crypto.encryption(state.player),
                 });
             },
             deserialize: (value) => {
                 const state = JSON.parse(value);
                 return {
                     boss: crypto.decryption(state.boss),
-                    player: crypto.decryption(state.player)
+                    player: crypto.decryption(state.player),
                 };
             }
         }

@@ -55,15 +55,15 @@ export default {
 <style scoped>
 .fortune-telling {
   padding: 20px;
-  background-color: #ffffff;
+  background-color: var(--el-bg-color);
   border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--el-box-shadow-light);
 }
 
 .fortune-button {
   width: 100%;
-  background-color: #5856d6;
-  color: white;
+  background-color: var(--el-color-primary);
+  color: var(--el-color-white);
   border: none;
   padding: 12px;
   border-radius: 8px;
@@ -71,13 +71,18 @@ export default {
   transition: all 0.3s ease;
 }
 
+.fortune-button:hover {
+  opacity: 0.9;
+}
+
 .fortune-button:disabled {
-  background-color: #b0b0b0;
+  background-color: var(--el-button-disabled-bg-color);
+  color: var(--el-button-disabled-text-color);
 }
 
 .result {
   margin-top: 20px;
   font-size: 16px;
-  color: #1c1c1e;
+  color: var(--el-text-color-primary);
 }
 </style>

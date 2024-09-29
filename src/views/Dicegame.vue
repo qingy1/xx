@@ -9,7 +9,7 @@
         </el-radio-group>
       </div>
       <div class="bet-amount">
-        <el-input-number v-model="betAmount" :min="100" :step="100" :max="10000" placeholder="下注金额"></el-input-number>
+        <el-input-number v-model="betAmount" :min="100" :step="100" :max="1000000" placeholder="下注金额"></el-input-number>
       </div>
       <el-button @click="placeBet" :disabled="!canBet">
         {{ canBet ? '下注' : '冷却中' }}

@@ -1,6 +1,5 @@
 <template>
     <div class="check-in">
-      <h3>每日签到</h3>
       <div class="check-in-calendar">
         <div v-for="day in 7" :key="day" class="day-box" :class="{ 'checked': isCheckedIn(day), 'current': isCurrentDay(day) }">
           <span class="day-number">{{ day }}</span>
@@ -60,12 +59,12 @@
         }
   
         this.player.checkinStreak++;
+        this.player.checkinDays++;
         this.player.lastCheckinDate = new Date().toISOString();
         this.player.props.cultivateDan += reward;
   
-        this.$store.commit('updatePlayer', this.player);
+       // this.$store.commit('updatePlayer', this.player);
         this.$emit('game-result', { success: true, reward });
-  
         this.$notify({
           title: '签到成功',
           message: `获得 ${reward} 培养丹！`,
@@ -78,23 +77,13 @@
 <style scoped>
 .check-in {
   padding: 20px;
-  background-color: #ffffff;
+  background-color: #1e1e1e;
   border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  color: #000000;
-}
-
-.dark .check-in {
-  background-color: #2c2c2e;
-  color: #ffffff;
   box-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
+  color: #ffffff;
 }
 
 h3 {
-  color: #000000;
-}
-
-.dark h3 {
   color: #ffffff;
 }
 
@@ -112,32 +101,18 @@ h3 {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  background-color: #f0f0f0;
+  background-color: #2c2c2e;
   font-size: 14px;
   transition: all 0.3s ease;
-  color: #000000;
-}
-
-.dark .day-box {
-  background-color: #3a3a3c;
   color: #ffffff;
 }
 
 .day-box.checked {
-  background-color: #4cd964;
-  color: white;
-}
-
-.dark .day-box.checked {
   background-color: #30d158;
 }
 
 .day-box.current {
-  border: 2px solid #007aff;
-}
-
-.dark .day-box.current {
-  border-color: #0a84ff;
+  border: 2px solid #0a84ff;
 }
 
 .day-number {
@@ -151,7 +126,7 @@ h3 {
 .check-in-button {
   width: 100%;
   margin-top: 20px;
-  background-color: #007aff;
+  background-color: #0a84ff;
   color: white;
   border: none;
   padding: 12px;
@@ -160,25 +135,85 @@ h3 {
   transition: all 0.3s ease;
 }
 
-.dark .check-in-button {
-  background-color: #0a84ff;
-}
-
 .check-in-button:disabled {
-  background-color: #b0b0b0;
-}
-
-.dark .check-in-button:disabled {
   background-color: #636366;
 }
 
 .streak-info, .next-bonus {
   margin-top: 10px;
   font-size: 14px;
-  color: #8e8e93;
+  color: #98989d;
+}
+</style><style scoped>
+.check-in {
+  padding: 20px;
+  background-color: var(--el-bg-color);
+  border-radius: 12px;
+  box-shadow: var(--el-box-shadow-light);
+  color: var(--el-text-color-primary);
 }
 
-.dark .streak-info, .dark .next-bonus {
-  color: #98989d;
+h3 {
+  color: var(--el-text-color-primary);
+}
+
+.check-in-calendar {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.day-box {
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--el-fill-color-light);
+  font-size: 14px;
+  transition: all 0.3s ease;
+  color: var(--el-text-color-primary);
+}
+
+.day-box.checked {
+  background-color: var(--el-color-success);
+  color: var(--el-color-white);
+}
+
+.day-box.current {
+  border: 2px solid var(--el-color-primary);
+}
+
+.day-number {
+  font-weight: bold;
+}
+
+.reward {
+  font-size: 12px;
+}
+
+.check-in-button {
+  width: 100%;
+  margin-top: 20px;
+  background-color: var(--el-color-primary);
+  color: var(--el-color-white);
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+
+.check-in-button:disabled {
+  background-color: var(--el-button-disabled-bg-color);
+  color: var(--el-button-disabled-text-color);
+}
+
+.streak-info, .next-bonus {
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--el-text-color-secondary);
 }
 </style>

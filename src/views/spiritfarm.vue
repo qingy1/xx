@@ -1,0 +1,363 @@
+<template>
+    <div class="spirit-farm">
+        <div class="farm-info">
+            <div class="tag attribute">
+                灵田等级: {{ player.farm.level }}
+            </div>
+            <div class="tag attribute">
+                灵田数量: {{ player.farm.plots.length }}/9
+            </div>
+            <div class="tag attribute">
+                熟练度: {{ player.farm.experience }}/{{ experienceNeeded }}
+            </div>
+            <div class="tag attribute">
+                灵石: {{ player.props.money }}
+            </div>
+            <div class="tag attribute">
+                天气: {{ currentWeather }}
+            </div>
+        </div>
+        <div class="farm-grid">
+            <div v-for="(plot, index) in player.farm.plots" :key="index" class="plot">
+                <div v-if="plot.herb" class="herb" :class="[plot.herb.stage, {'has-pest': plot.hasPest}]">
+                    {{ plot.herb.name }}
+                    <p>{{ plot.herb.stage }}</p>
+                    <p v-if="plot.hasPest" class="pest-warning">有害虫!</p>
+                </div>
+                <el-button v-else @click="showPlantModal(index)" size="small">种植</el-button>
+                <div class="plot-actions" v-if="plot.herb">
+                    <el-button @click="water(index)" size="small" :disabled="plot.herb.stage === 'harvested'">浇水</el-button>
+                    <el-button @click="applyFertilizer(index)" size="small" :disabled="plot.herb.stage === 'harvested'">施肥</el-button>
+                    <el-button @click="removePest(index)" size="small" v-if="plot.hasPest">除虫</el-button>
+                    <el-button @click="harvest(index)" size="small" :disabled="plot.herb.stage !== 'mature'">收获</el-button>
+                </div>
+            </div>
+        </div>
+        <div class="farm-actions">
+            <el-button @click="upgradeFarm" :disabled="!canUpgrade">升级灵田 ({{ upgradeCost }}灵石)</el-button>
+            <el-button @click="expandFarm" :disabled="player.farm.plots.length >= 9">扩建灵田 (1000灵石)</el-button>
+            <el-button @click="showWarehouse">仓库</el-button>
+            <el-button @click="showMarket">市场</el-button>
+        </div>
+
+        <el-dialog v-model="plantModalVisible" title="选择药草种植" width="30%">
+            <el-select v-model="selectedHerb" placeholder="选择药草">
+                <el-option v-for="herb in availableHerbs" :key="herb.name" :label="herb.name" :value="herb"></el-option>
+            </el-select>
+            <template #footer>
+                <span class="dialog-footer">
+                    <el-button @click="plantModalVisible = false">取消</el-button>
+                    <el-button type="primary" @click="plant">种植</el-button>
+                </span>
+            </template>
+        </el-dialog>
+
+        <el-dialog v-model="warehouseVisible" title="仓库" width="30%">
+            <div v-for="(amount, herb) in player.farm.warehouse" :key="herb">
+                {{ herb }}: {{ amount }}
+            </div>
+        </el-dialog>
+
+        <el-dialog v-model="marketVisible" title="市场" width="30%">
+            <div v-for="herb in availableHerbs" :key="herb.name">
+                {{ herb.name }}: {{ herb.value }} 灵石
+                <el-button @click="sellHerb(herb)" size="small" :disabled="!player.farm.warehouse[herb.name]">出售</el-button>
+            </div>
+        </el-dialog>
+    </div>
+</template>
+
+<script>
+import { AVAILABLE_HERBS, WEATHERS, GROWTH_STAGES } from '@/plugins/farmConfig';
+import { ElMessage } from 'element-plus';
+
+export default {
+    name: 'SpiritFarm',
+    data() {
+        return {
+            player: {},
+            plantModalVisible: false,
+            warehouseVisible: false,
+            marketVisible: false,
+            selectedHerb: null,
+            selectedPlot: null,
+            availableHerbs: AVAILABLE_HERBS,
+            currentWeather: '晴朗',
+            weathers: WEATHERS,
+            weatherInterval: null,
+        };
+    },
+    computed: {
+        experienceNeeded() {
+            return this.player.farm.level * 100;
+        },
+        upgradeCost() {
+            return this.player.farm.level * 500;
+        },
+        canUpgrade() {
+            return this.player.farm.experience >= this.experienceNeeded && this.player.props.money >= this.upgradeCost;
+        },
+    },
+    created() {
+        this.player = this.$store.player;
+        
+        // 确保 player.farm 存在并且有所有必要的字段
+        if (!this.player.farm) {
+            this.player.farm = {
+                level: 1,
+                plots: [{ herb: null, hasPest: false }],
+                experience: 0,
+                warehouse: {},
+            };
+        }
+        
+        if (!this.player.farm.plots || this.player.farm.plots.length === 0) {
+            this.player.farm.plots = [{ herb: null, hasPest: false }];
+        }
+        if (!this.player.farm.warehouse) {
+            this.player.farm.warehouse = {};
+        }
+        if (typeof this.player.farm.level !== 'number') {
+            this.player.farm.level = 1;
+        }
+        if (typeof this.player.farm.experience !== 'number') {
+            this.player.farm.experience = 0;
+        }
+
+        this.startWeatherCycle();
+    },
+    beforeUnmount() {
+        this.stopWeatherCycle();
+    },
+    methods: {
+        showPlantModal(index) {
+            this.selectedPlot = index;
+            this.plantModalVisible = true;
+        },
+        plant() {
+            if (this.selectedHerb && this.selectedPlot !== null) {
+                const newHerb = { ...this.selectedHerb, stage: 'seed' };
+                this.player.farm.plots[this.selectedPlot].herb = newHerb;
+                this.growHerb(this.selectedPlot);
+                ElMessage.success(`成功种植了${this.selectedHerb.name}`);
+            }
+            this.plantModalVisible = false;
+            this.selectedHerb = null;
+        },
+        growHerb(plotIndex) {
+            const plot = this.player.farm.plots[plotIndex];
+            const herb = plot.herb;
+            let currentStageIndex = 0;
+
+            const grow = () => {
+                if (currentStageIndex < GROWTH_STAGES.length - 1) {
+                    currentStageIndex++;
+                    herb.stage = GROWTH_STAGES[currentStageIndex];
+                    
+                    let growthTime = herb.growthTime / 3;
+                    if (this.currentWeather === '炎热') growthTime *= 0.8;
+                    if (this.currentWeather === '寒冷') growthTime *= 1.2;
+
+                    if (Math.random() > herb.pestResistance) {
+                        plot.hasPest = true;
+                    }
+
+                    setTimeout(grow, growthTime);
+                }
+            };
+
+            setTimeout(grow, herb.growthTime / 3);
+        },
+        water(plotIndex) {
+            const herb = this.player.farm.plots[plotIndex].herb;
+            if (herb && herb.stage !== 'mature') {
+                const currentIndex = GROWTH_STAGES.indexOf(herb.stage);
+                if (currentIndex < GROWTH_STAGES.length - 1) {
+                    herb.stage = GROWTH_STAGES[currentIndex + 1];
+                    ElMessage.success('浇水成功，植物生长加速');
+                }
+            }
+        },
+        applyFertilizer(plotIndex) {
+            const herb = this.player.farm.plots[plotIndex].herb;
+            if (herb && herb.stage !== 'mature' && this.player.props.money >= 50) {
+                this.player.props.money -= 50;
+                const currentIndex = GROWTH_STAGES.indexOf(herb.stage);
+                if (currentIndex < GROWTH_STAGES.length - 1) {
+                    herb.stage = GROWTH_STAGES[currentIndex + 1];
+                    ElMessage.success('施肥成功，植物生长加速');
+                }
+            } else {
+                ElMessage.warning('灵石不足或植物已成熟，无法施肥');
+            }
+        },
+        removePest(plotIndex) {
+            if (this.player.props.money >= 30) {
+                this.player.props.money -= 30;
+                this.player.farm.plots[plotIndex].hasPest = false;
+                ElMessage.success('除虫成功');
+            } else {
+                ElMessage.warning('灵石不足，无法除虫');
+            }
+        },
+        harvest(plotIndex) {
+            const herb = this.player.farm.plots[plotIndex].herb;
+            if (herb && herb.stage === 'mature') {
+                this.player.farm.warehouse[herb.name] = (this.player.farm.warehouse[herb.name] || 0) + 1;
+                this.player.farm.experience += 10;
+                this.player.farm.plots[plotIndex].herb = null;
+                this.checkLevelUp();
+                ElMessage.success(`成功收获了${herb.name}`);
+            }
+        },
+        upgradeFarm() {
+            if (this.canUpgrade) {
+                this.player.props.money -= this.upgradeCost;
+                this.player.farm.level++;
+                this.player.farm.experience = 0;
+                ElMessage.success(`灵田升级成功，当前等级：${this.player.farm.level}`);
+            } else {
+                ElMessage.warning('经验或灵石不足，无法升级灵田');
+            }
+        },
+        expandFarm() {
+            if (this.player.farm.plots.length < 9 && this.player.props.money >= 1000) {
+                this.player.props.money -= 1000;
+                this.player.farm.plots.push({ herb: null, hasPest: false });
+                ElMessage.success('成功扩建了一块灵田');
+            } else {
+                ElMessage.warning('灵石不足或已达到最大灵田数量，无法扩建');
+            }
+        },
+        checkLevelUp() {
+            if (this.player.farm.experience >= this.experienceNeeded) {
+                this.player.farm.experience -= this.experienceNeeded;
+                this.player.farm.level++;
+                ElMessage.success(`灵田等级提升，当前等级：${this.player.farm.level}`);
+            }
+        },
+        showWarehouse() {
+            this.warehouseVisible = true;
+        },
+        showMarket() {
+            this.marketVisible = true;
+        },
+        sellHerb(herb) {
+            if (this.player.farm.warehouse[herb.name] > 0) {
+                this.player.farm.warehouse[herb.name]--;
+                this.player.props.money += herb.value;
+                ElMessage.success(`成功出售${herb.name}，获得${herb.value}灵石`);
+            } else {
+                ElMessage.warning(`${herb.name}库存不足，无法出售`);
+            }
+        },
+        startWeatherCycle() {
+            this.weatherInterval = setInterval(() => {
+                this.currentWeather = this.weathers[getRandomInt(0, this.weathers.length - 1)];
+                ElMessage.info(`天气变化，当前天气：${this.currentWeather}`);
+            }, 300000);
+        },
+        stopWeatherCycle() {
+            if (this.weatherInterval) {
+                clearInterval(this.weatherInterval);
+            }
+        },
+    },
+};
+</script>
+
+<style scoped>
+.spirit-farm {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: var(--el-bg-color);
+    border-radius: 12px;
+    box-shadow: var(--el-box-shadow-light);
+}
+
+.farm-info {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.attribute {
+    width: calc(50% - 8px);
+    margin: 4px;
+    background-color: var(--el-fill-color-light);
+    border-radius: 8px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--el-text-color-primary);
+}
+
+.farm-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.plot {
+    background-color: var(--el-fill-color-light);
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.herb {
+    font-weight: bold;
+    color: var(--el-color-primary);
+}
+
+.herb.seed { color: var(--el-color-info); }
+.herb.sprout { color: var(--el-color-success); }
+.herb.growing { color: var(--el-color-warning); }
+.herb.mature { color: var(--el-color-danger); }
+
+.herb.has-pest {
+    background-color: rgba(255, 0, 0, 0.1);
+}
+
+.pest-warning {
+    color: var(--el-color-danger);
+    font-size: 12px;
+}
+
+.plot-actions {
+    margin-top: 10px;
+}
+
+.farm-actions {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.el-button {
+    margin-top: 10px;
+}
+
+@media (max-width: 768px) {
+    .farm-actions {
+        flex-direction: column;
+    }
+
+    .farm-actions .el-button {
+        width: 100%;
+    }
+}
+</style>

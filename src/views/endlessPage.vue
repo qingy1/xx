@@ -404,6 +404,8 @@
                 }
                     this.player.props.cultivateDan += 1;
                     this.sweepResults.cultivationPillsGained += 1;
+                // 增加层数
+                this.currentFloor++;
                 if (this.currentFloor > this.player.highestTowerFloor) {
                     this.player.highestTowerFloor = this.currentFloor;
                 }

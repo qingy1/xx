@@ -3,7 +3,7 @@
       <div class="bet-amount" v-if="!selectedStone">
         <el-button @click="decreaseBet" icon="el-icon-minus" :disabled="betAmount <= 100"></el-button>
         <el-input-number v-model="betAmount" :min="100" :step="100" :max="10000" placeholder="下注金额"></el-input-number>
-        <el-button @click="increaseBet" icon="el-icon-plus" :disabled="betAmount >= 10000"></el-button>
+        <el-button @click="increaseBet" icon="el-icon-plus" :disabled="betAmount >= 1000000"></el-button>
       </div>
       
       <div class="stones-container" v-if="!result">

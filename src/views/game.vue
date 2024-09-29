@@ -28,7 +28,7 @@
   import FortuneTelling from './fortunetelling.vue';
   import CheckIn from './checkin.vue';
   import GamblingStone from './GamblingStone.vue';
-  
+  import toe from './toe.vue';
   export default {
   components: {
     tag: () => import('@/components/tag.vue'),
@@ -37,6 +37,7 @@
     FortuneTelling: () => import('./fortunetelling.vue'),
     CheckIn: () => import('./checkin.vue'),
     GamblingStone: () => import('./GamblingStone.vue'),
+    toe: () => import('./toe.vue'),
   },
   data() {
     return {
@@ -48,6 +49,7 @@
         { name: 'rps', label: '剪刀石头布', component: 'RockPaperScissors' },
         { name: 'fortune', label: '算卦', component: 'FortuneTelling' },
         { name: 'gambling-stone', label: '赌石游戏', component: 'GamblingStone' },
+        { name: 'toe', label: '井字棋', component: 'toe' },
       ],
     }
   },
@@ -71,6 +73,7 @@
       FortuneTelling,
       CheckIn,
       GamblingStone,
+      toe
     },
     computed: {
       buttonData() {
@@ -108,18 +111,16 @@
             }
           }
         } else {
+            this.player.props.money -= result.reward;
           this.player.gameLosses++;
+          
         }
-        // 如果您的 store 支持，请取消下面这行的注释
-        // this.$store.commit('updatePlayer', this.player);
       },
       checkDailyReset() {
         const now = new Date();
         const lastCheckin = new Date(this.player.lastCheckinDate);
         if (now.getDate() !== lastCheckin.getDate() || now.getMonth() !== lastCheckin.getMonth() || now.getFullYear() !== lastCheckin.getFullYear()) {
           this.player.checkedInToday = false;
-          // 如果您的 store 支持，请取消下面这行的注释
-          // this.$store.commit('setPlayer', this.player);
         }
       },
     }
@@ -138,7 +139,7 @@
     display: flex;
     justify-content: space-around;
     margin-bottom: 20px;
-    background-color: #f2f2f7;
+    background-color: var(--el-fill-color-light);
     border-radius: 10px;
     padding: 10px;
   }
@@ -146,27 +147,27 @@
   .game-options .el-button {
     background-color: transparent;
     border: none;
-    color: #007aff;
+    color: var(--el-color-primary);
     font-weight: 500;
     transition: all 0.3s ease;
   }
   
   .game-options .el-button.active {
-    background-color: #007aff;
-    color: #ffffff;
+    background-color: var(--el-color-primary);
+    color: var(--el-color-white);
     border-radius: 8px;
   }
   
   .game-container {
-    background-color: #ffffff;
+    background-color: var(--el-bg-color);
     border-radius: 12px;
     padding: 20px;
     margin-bottom: 20px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--el-box-shadow-light);
   }
   
   .stats {
-    background-color: #f2f2f7;
+    background-color: var(--el-fill-color-light);
     padding: 15px;
     border-radius: 12px;
   }
@@ -178,24 +179,24 @@
   }
   
   .attribute {
-    background-color: #ffffff;
+    background-color: var(--el-bg-color);
     border-radius: 8px;
     padding: 10px 15px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex: 1 1 calc(50% - 5px);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: var(--el-box-shadow-lighter);
   }
   
   .attribute-label {
     font-weight: 500;
-    color: #3a3a3c;
+    color: var(--el-text-color-primary);
   }
   
   .attribute-value {
     font-weight: 600;
-    color: #007aff;
+    color: var(--el-color-primary);
   }
   
   @media (max-width: 768px) {

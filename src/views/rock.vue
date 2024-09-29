@@ -1,7 +1,7 @@
 <template>
     <div class="rps-game">
       <div class="bet-amount">
-        <el-input-number v-model="betAmount" :min="100" :step="100" :max="10000" placeholder="下注金额"></el-input-number>
+        <el-input-number v-model="betAmount" :min="100" :step="100" :max="1000000" placeholder="下注金额"></el-input-number>
       </div>
       <div class="options">
         <el-button v-for="option in options" :key="option" @click="play(option)" :disabled="!canPlay">

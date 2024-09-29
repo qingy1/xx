@@ -6,6 +6,8 @@ import explore from '../views/explorePage.vue';
 import cultivate from '../views/cultivatePage.vue';
 import game from '../views/game.vue'
 import endlesstower from '../views/endlessPage.vue'
+import spiritfarm from '../views/spiritfarm.vue'
+import youli from '../views/npc.vue'
 import { createRouter, createWebHashHistory } from 'vue-router';
 
 const routes = [
@@ -72,6 +74,22 @@ const routes = [
             keepAlive: false
         },
         component: game
+    },
+    {
+        path: '/spiritfarm',
+        name: 'spiritfarm',
+        meta: {
+            keepAlive: false
+        },
+        component: spiritfarm
+    },
+    {
+        path: '/youli',
+        name: 'youli',
+        meta: {
+            keepAlive: false
+        },
+        component: youli
     }
 ];
 const router = createRouter({

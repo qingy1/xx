@@ -947,6 +947,8 @@
                             this.equipAllShow = true;
                         }
                     },
+                    { text: '游历四方', handler: () => this.$router.push('/youli') },
+                    { text: '一方灵田', handler: () => this.$router.push('/spiritfarm') },
                     { text: '趣味娱乐', handler: () => this.$router.push('/game') },
                     { text: '挑战无尽塔', handler: () => this.$router.push('/endlesstower') },
                     { text: '世界BOSS', handler: () => this.$router.push('/boss') }
