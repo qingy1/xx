@@ -40,10 +40,11 @@ export default {
     data() {
         return {
             categories: [
-                { type: 'level', name: '等级排行' },
+                { type: 'level', name: '境界排行' },
                 { type: 'kills', name: '击杀排行' },
                 { type: 'power', name: '实力排行' },
-                { type: 'signIn', name: '签到排行' }
+                { type: 'signIn', name: '签到排行' },
+                { type: 'ta', name: '无尽塔排行' }
             ],
             selectedCategory: 'level',
             leaderboardData: [],
@@ -84,8 +85,8 @@ export default {
             // 从后端API获取数据
             // 示例数据
             this.leaderboardData = [
-                { id: 1, name: '温某某', level: 100, kills: 1000, power: 1000, signIn: 300 },
-                { id: 2, name: '水笔', level: 15, kills: 150, power: 1500, signIn: 25 },
+                { id: 1, name: '温某某', level: this.$levelNames(100), kills: 1000, power: 1000, signIn: 300,ta: 2000 },
+                { id: 2, name: '水笔', level: this.$levelNames(15), kills: 150, power: 1500, signIn: 25, ta:100},
                 // ... 更多玩家数据
             ];
         },

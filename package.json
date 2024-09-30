@@ -1,8 +1,8 @@
 {
     "name": "xiuxian-game",
     "private": true,
-    "version": "0.9.4",
-    "versionlog": "新增一些测试功能",
+    "version": "0.9.5",
+    "versionlog": "新增一些测试功能(日志)",
     "type": "module",
     "scripts": {
         "dev": "vite --open",

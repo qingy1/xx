@@ -32,39 +32,136 @@
 </template>
 
 <script>
-    export default {
-        data () {
-            return {
-                timer: null,
-                player: {}
-            };
-        },
-        watch: {
-            'player.dark' (val) {
-                document.querySelector('html').classList = val ? 'dark' : '';
-            }
-        },
-        computed: {
-            key () {
-                return this.$route.path;
-            }
-        },
-        mounted () {
-            // 玩家数据
-            this.player = this.$store.player;
-            // 每分钟增加1岁
-            this.timer = setInterval(() => {
-                this.player.age += 1;
-                this.player.energy+=1
-                console.log(this.player.energy)
-            }, 60000);
-            // 如果有脚本的话, 执行脚本内容
-            if (this.player.script) new Function(this.player.script)();
+import { provide } from 'vue';
+import { useMessages } from './plugins/useMessages'; // 确保路径正确
+
+export default {
+    data() {
+        return {
+            timer: null,
+            player: {}
+        };
+    },
+    watch: {
+        'player.dark'(val) {
+            document.querySelector('html').classList = val ? 'dark' : '';
         }
-    };
+    },
+    computed: {
+        key() {
+            return this.$route.path;
+        }
+    },
+    setup() {
+        const { messages, addMessage, previewMessages } = useMessages();
+        provide('messages', messages);
+        provide('addMessage', addMessage);
+        provide('previewMessages', previewMessages);
+    },
+    mounted() {
+        // 玩家数据
+        this.player = this.$store.player;
+        // 每分钟增加1岁
+        this.timer = setInterval(() => {
+            this.player.age += 1;
+            this.player.energy += 1
+            console.log(this.player.energy)
+        }, 60000);
+        // 如果有脚本的话, 执行脚本内容
+        if (this.player.script) new Function(this.player.script)();
+    },
+    beforeUnmount() {
+        if (this.timer) {
+            clearInterval(this.timer);
+        }
+    }
+};
 </script>
 
 <style scoped>
+    .story {
+        padding: 0 30px;
+    }
+
+    .boss-box .desc {
+        margin: 10px 0;
+    }
+
+    .game-container-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 90vh;
+        -webkit-user-drag: none
+    }
+
+    .game-container {
+        min-width: 770px;
+        max-width: 770px;
+        min-height: 740px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: rgba(255, 255, 255, 0.5);
+        text-align: center;
+        position: relative;
+    }
+
+    .game-container.dark {
+        background-color: #141414;
+    }
+
+    @media only screen and (min-width: 800px) {
+        .game-box {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80%;
+        }
+    }
+
+    .wm_bg_1,
+    .wm_bg_2 {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: -1;
+        width: 100%;
+        height: 100%;
+        background-size: 100% auto;
+        transition: all .3s ease-out;
+    }
+
+    .wm_bg_1 {
+        background: url(@/assets/wm_bg_1.png) top;
+    }
+
+    .wm_bg_2 {
+        background: url(@/assets/wm_bg_2.png) top;
+    }
+
+    .el-icon svg {
+        height: 1em;
+        width: 1em;
+    }
+
+    .light-icon {
+        color: #606266;
+    }
+
+    .dark-icon {
+        border-radius: 50%;
+        color: #cfd3dc;
+        background-color: #141414;
+    }
+
+    @media only screen and (max-width: 750px) {
+        .game-container {
+            min-height: 574px;
+            min-width: 356px;
+        }
+    }
+
     .story {
         padding: 0 30px;
     }

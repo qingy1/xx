@@ -80,14 +80,19 @@
             },
             triggerRandomEvent () {
                 const randomEvents = [
-                    { type: 'resource', name: '灵石', amount: 100, description: '你发现了一堆灵石！' },
-                    { type: 'cultivation', name: '顿悟', amount: 500, description: '你突然顿悟，修为大涨！' },
-                    { type: 'item', name: '丹药', effect: '增加100点修为', description: '你获得了一颗珍贵的丹药！' },
-                    { type: 'skill', name: '剑法', effect: '增加10%攻击力', description: '你领悟了一门高深剑法！' },
-                    { type: 'lucky', name: '雷劫', effect: '修为降低10%', description: '你遭遇了雷劫！' },
+                    { type: 'resource', name: '灵石', amount: 100, description: '发现了一堆灵石！' },
+                    { type: 'cultivation', name: '顿悟', amount: 500, description: '突然顿悟，修为大涨！' },
+                    { type: 'item', name: '丹药', effect: '增加100点修为', description: '获得了一颗珍贵的丹药！' },
+                    { type: 'skill', name: '剑法', effect: '增加10%攻击力', description: '领悟了一门高深剑法！' },
+                    { type: 'lucky', name: '雷劫', effect: '修为降低10%', description: '遭遇了雷劫！' },
                 ];
                 const event = randomEvents[Math.floor(Math.random() * randomEvents.length)];
                 this.texts.push(`<span style="color: #E6A23C;">${event.description}</span>`);
+                this.$addMessage({
+                            category: '系统',
+                            type: 'system',
+                            content: `[color=red]你[/color]在修炼时[color=#FF0000]${event.description}!`
+                        });
                 switch (event.type) {
                     case 'resource':
                         this.player.props.money += event.amount;
@@ -134,6 +139,11 @@
                         this.player.health = this.player.maxHealth;
                         this.player.maxCultivation = Math.floor(100 * Math.pow(2, this.player.level * reincarnation));
                         this.texts.push(`恭喜你突破了！当前境界：${this.$levelNames(this.player.level)}`);
+                        this.$addMessage({
+                            category: '系统',
+                            type: 'system',
+                            content: `恭喜你突破了！当前境界：[color=red]${this.$levelNames(this.player.level)}[/color]!`
+                        });
                     } else {
                         this.player.cultivation += exp;
                     }

@@ -79,7 +79,7 @@
   padding: 20px;
   background-color: #1e1e1e;
   border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0px 0px rgba(255, 255, 255, 0.1);
   color: #ffffff;
 }
 

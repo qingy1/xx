@@ -8,7 +8,7 @@ import { useMainStore } from '@/plugins/store';
 import ElementPlus, { ElNotification } from 'element-plus';
 import * as ElementPlusIconsVue from '@element-plus/icons-vue';
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
-
+import { useMessages } from '@/plugins/useMessages';
 const app = createApp(App);
 
 const pinia = createPinia();
@@ -24,7 +24,11 @@ app.config.globalProperties.$notifys = (data) => {
     ElNotification.closeAll();
     ElNotification(data);
 };
-
+const { messages, addMessage, previewMessages } = useMessages();
+app.config.globalProperties.$addMessage = addMessage;
+app.config.globalProperties.$messages = messages;
+// 为组合式 API 提供 inject
+app.provide('addMessage', addMessage);
 const maxLv = 144;
 app.config.globalProperties.$maxLv = maxLv;
 

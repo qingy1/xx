@@ -8,6 +8,8 @@
           {{ option }}
         </el-button>
       </div>
+
+
       <div class="game-result" v-if="result">
         <div class="player-choice">
           <img :src="getImagePath(result.playerChoice)" :alt="result.playerChoice" class="choice-image">
@@ -22,8 +24,8 @@
       <div v-if="result" class="result">
         <p>{{ result.message }}</p>
       </div>
-      <div class="timer" v-if="!canPlay">
-        下次游戏时间: {{ formatTime(nextGameTime) }}
+      <div class="timer" >
+        {{ canPlay ? '' : (hasEnoughMoney ? '冷却中' : '灵石不足') }}
       </div>
     </div>
   </template>
@@ -45,9 +47,12 @@
       nextGameTime() {
         return this.player.nextGameTimes?.rps || 0;
       },
-      canPlay() {
-        return Date.now() >= this.nextGameTime;
-      }
+      hasEnoughMoney() {
+    return this.player.props.money >= this.betAmount;
+  },
+  canPlay() {
+        return Date.now() >= this.nextGameTime && this.hasEnoughMoney;
+      },
     },
     methods: {
       play(playerChoice) {
@@ -64,7 +69,7 @@
           won = true;
         }
   
-        const reward = won ? this.betAmount * 2 : 0;
+        const reward = won ? this.betAmount * 2 : this.betAmount;
         this.result = {
           playerChoice,
           computerChoice,

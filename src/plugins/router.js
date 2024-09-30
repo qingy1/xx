@@ -90,7 +90,18 @@ const routes = [
             keepAlive: false
         },
         component: youli
-    }
+    },
+    {
+        path: '/messages',
+        name: 'Messages',
+        component: () => import('@/views/MessagePage.vue')
+      },
+      {
+          path: '/leaderboardView',
+          name: 'LeaderboardView',
+          component: () => import('@/views/LeaderboardView.vue')
+        }
+
 ];
 const router = createRouter({
     history: createWebHashHistory(),

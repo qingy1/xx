@@ -1,138 +1,172 @@
 <template>
-    <div class="tic-tac-toe">
-      <div class="game-board">
-        <div v-for="(row, rowIndex) in board" :key="rowIndex" class="row">
-          <button 
-            v-for="(cell, colIndex) in row" 
-            :key="colIndex" 
-            @click="makeMove(rowIndex, colIndex)" 
-            :disabled="cell !== ' ' || !canPlay"
-            class="cell"
-          >
-            {{ cell }}
-          </button>
-        </div>
-      </div>
-      <p class="game-status">{{ gameStatus }}</p>
-      <el-button @click="resetGame" :disabled="!gameEnded && canPlay">重新开始</el-button>
-      <div class="timer" v-if="!canPlay">
-        下次游戏时间: {{ formatTime(nextGameTime) }}
+  <div class="tic-tac-toe">
+    <!-- 游戏主板 -->
+    <div class="game-board">
+      <!-- 遍历每一行 -->
+      <div v-for="(row, rowIndex) in board" :key="rowIndex" class="row">
+        <!-- 遍历每一个单元格 -->
+        <button
+          v-for="(cell, colIndex) in row"
+          :key="colIndex"
+          @click="makeMove(rowIndex, colIndex)"
+          :disabled="cell !== ' ' || !canPlay"
+          class="cell"
+        >
+          {{ cell }}
+        </button>
       </div>
     </div>
-  </template>
-  
-  <script>
-  export default {
-    name: 'TicTacToe',
-    data() {
-      return {
-        board: [
-          [' ', ' ', ' '],
-          [' ', ' ', ' '],
-          [' ', ' ', ' ']
-        ],
-        currentPlayer: 'X',
-        gameEnded: false,
-        gameStatus: '轮到玩家 X',
+    <!-- 显示当前游戏状态 -->
+    <p class="game-status">{{ gameStatus }}</p>
+    <!-- 重置游戏按钮 -->
+    <el-button @click="resetGame" :disabled="!gameEnded && !canPlay">
+      {{ gameEnded ? '重新开始' : (canPlay ? '重置游戏' : (hasEnoughMoney ? '冷却中' : '灵石不足')) }}
+    </el-button>
+    <!-- 显示下次游戏时间 -->
+    <div class="timer" v-if="!canPlay">
+      下次游戏时间: {{ formatTime(nextGameTime) }}
+    </div>
+  </div>
+</template>
+
+<script>
+import { computed } from 'vue';
+
+// 定义获胜组合
+const WINNING_LINES = [
+  [[0, 0], [0, 1], [0, 2]],
+  [[1, 0], [1, 1], [1, 2]],
+  [[2, 0], [2, 1], [2, 2]],
+  [[0, 0], [1, 0], [2, 0]],
+  [[0, 1], [1, 1], [2, 1]],
+  [[0, 2], [1, 2], [2, 2]],
+  [[0, 0], [1, 1], [2, 2]],
+  [[0, 2], [1, 1], [2, 0]]
+];
+
+export default {
+  name: 'TicTacToe',
+  data() {
+    return {
+      // 游戏棋盘，3x3阵列，初始填充为空格
+      board: [
+        [' ', ' ', ' '],
+        [' ', ' ', ' '],
+        [' ', ' ', ' ']
+      ],
+      // 当前玩家，'X' 或 'O'
+      currentPlayer: 'X',
+      // 游戏是否已经结束
+      gameEnded: false,
+      // 游戏状态信息
+      gameStatus: '轮到玩家 X',
+    }
+  },
+  computed: {
+    // 从 Vuex store 获取玩家信息
+    player() {
+      return this.$store.player;
+    },
+    // 计算下次游戏可用时间
+    nextGameTime() {
+      return this.player.nextGameTimes?.ticTacToe || 0;
+    },
+    // 判断玩家是否有足够的钱
+    hasEnoughMoney() {
+      return this.player.props.money >= 1000;
+    },
+    // 判断玩家是否可以进行游戏
+    canPlay() {
+      return Date.now() >= this.nextGameTime && this.hasEnoughMoney;
+    },
+  },
+  methods: {
+    // 处理玩家的移动
+    makeMove(row, col) {
+      // 检查单元格是否为空，游戏是否未结束，以及玩家是否可以进行游戏
+      if (this.board[row][col] === ' ' && !this.gameEnded && this.canPlay) {
+        // 更新棋盘并检查游戏状态
+        this.updateBoard(row, col, this.currentPlayer);
+        if (this.checkWinner()) {
+          this.endGame(`玩家 ${this.currentPlayer} 胜利！`, true);
+        } else if (this.isBoardFull()) {
+          this.endGame('平局！', false);
+        } else {
+          // 切换玩家并进行计算机移动
+          this.switchPlayer();
+          this.computerMove();
+        }
       }
     },
-    computed: {
-      player() {
-        return this.$store.player;
-      },
-      nextGameTime() {
-        return this.player.nextGameTimes?.ticTacToe || 0;
-      },
-      canPlay() {
-        return Date.now() >= this.nextGameTime;
-      }
-    },
-    methods: {
-      makeMove(row, col) {
-        if (this.board[row][col] === ' ' && !this.gameEnded && this.canPlay) {
-          this.board[row][col] = this.currentPlayer;
+    // 处理计算机的移动
+    computerMove() {
+      if (!this.gameEnded) {
+        setTimeout(() => {
+          let row, col;
+          const emptyCells = [];
+          this.board.forEach((r, i) => r.forEach((c, j) => c === ' ' && emptyCells.push([i, j])));
+          [row, col] = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+          this.updateBoard(row, col, this.currentPlayer);
           if (this.checkWinner()) {
-            this.gameStatus = `玩家 ${this.currentPlayer} 胜利！`;
-            this.gameEnded = true;
-            this.endGame(true);
+            this.endGame(`计算机 ${this.currentPlayer} 胜利！`, false);
           } else if (this.isBoardFull()) {
-            this.gameStatus = '平局！';
-            this.gameEnded = true;
-            this.endGame(false);
+            this.endGame('平局！', false);
           } else {
             this.switchPlayer();
-            this.computerMove();
           }
-        }
-      },
-      computerMove() {
-        if (!this.gameEnded) {
-          setTimeout(() => {
-            let row, col;
-            do {
-              row = Math.floor(Math.random() * 3);
-              col = Math.floor(Math.random() * 3);
-            } while (this.board[row][col] !== ' ');
-            
-            this.board[row][col] = this.currentPlayer;
-            if (this.checkWinner()) {
-              this.gameStatus = `计算机 ${this.currentPlayer} 胜利！`;
-              this.gameEnded = true;
-              this.endGame(false);
-            } else if (this.isBoardFull()) {
-              this.gameStatus = '平局！';
-              this.gameEnded = true;
-              this.endGame(false);
-            } else {
-              this.switchPlayer();
-            }
-          }, 500);
-        }
-      },
-      switchPlayer() {
-        this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';
-        this.gameStatus = `轮到${this.currentPlayer === 'X' ? '玩家' : '计算机'} ${this.currentPlayer}`;
-      },
-      checkWinner() {
-        const lines = [
-          [[0,0], [0,1], [0,2]],
-          [[1,0], [1,1], [1,2]],
-          [[2,0], [2,1], [2,2]],
-          [[0,0], [1,0], [2,0]],
-          [[0,1], [1,1], [2,1]],
-          [[0,2], [1,2], [2,2]],
-          [[0,0], [1,1], [2,2]],
-          [[0,2], [1,1], [2,0]]
-        ];
-        return lines.some(line => 
-          line.every(([row, col]) => this.board[row][col] === this.currentPlayer)
-        );
-      },
-      isBoardFull() {
-        return this.board.every(row => row.every(cell => cell !== ' '));
-      },
-      resetGame() {
-        this.board = this.board.map(row => row.map(() => ' '));
-        this.currentPlayer = 'X';
-        this.gameEnded = false;
-        this.gameStatus = '轮到玩家 X';
-      },
-      endGame(playerWon) {
-        const reward = playerWon ? 1000 : 100; // 玩家胜利获得1000，平局获得100
-        this.$emit('game-result', { success: playerWon, reward });
-        const newNextGameTime = Date.now() + 10 * 60 * 1000; // 10 minutes
-        this.player.nextGameTimes.ticTacToe = newNextGameTime;
-        this.$emit('update-next-game-time', { game: 'ticTacToe', time: newNextGameTime });
-      },
-      formatTime(timestamp) {
-        const date = new Date(timestamp);
-        return date.toLocaleTimeString();
+        }, 500);
       }
+    },
+    // 更新棋盘数据
+    updateBoard(row, col, player) {
+      this.board[row][col] = player;
+    },
+    // 切换当前玩家
+    switchPlayer() {
+      this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';
+      this.gameStatus = `轮到${this.currentPlayer === 'X' ? '玩家' : '计算机'} ${this.currentPlayer}`;
+    },
+    // 检查是否有玩家获胜
+    checkWinner() {
+      return WINNING_LINES.some(line =>
+        line.every(([row, col]) => this.board[row][col] === this.currentPlayer)
+      );
+    },
+    // 检查棋盘是否已满
+    isBoardFull() {
+      return this.board.flat().every(cell => cell !== ' ');
+    },
+    // 重置游戏状态
+    resetGame() {
+      this.board = [
+        [' ', ' ', ' '],
+        [' ', ' ', ' '],
+        [' ', ' ', ' ']
+      ];
+      this.currentPlayer = 'X';
+      this.gameEnded = false;
+      this.gameStatus = '轮到玩家 X';
+    },
+    // 结束游戏并处理结果
+    endGame(status, playerWon) {
+      this.gameStatus = status;
+      this.gameEnded = true;
+      const reward = playerWon ? 1000 : -1000;
+      this.$emit('game-result', { success: playerWon, reward });
+      const newNextGameTime = Date.now() + 10 * 60 * 1000;
+      this.player.nextGameTimes.ticTacToe = newNextGameTime;
+      this.$emit('update-next-game-time', { game: 'ticTacToe', time: newNextGameTime });
+    },
+    // 格式化时间戳
+    formatTime(timestamp) {
+      const date = new Date(timestamp);
+      return date.toLocaleTimeString();
     }
   }
-  </script>
-  
-  <style scoped>
+}
+</script>
+
+<style scoped>
 .tic-tac-toe {
   display: flex;
   flex-direction: column;

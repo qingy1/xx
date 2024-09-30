@@ -12,7 +12,7 @@
         <el-input-number v-model="betAmount" :min="100" :step="100" :max="1000000" placeholder="下注金额"></el-input-number>
       </div>
       <el-button @click="placeBet" :disabled="!canBet">
-        {{ canBet ? '下注' : '冷却中' }}
+        {{ canBet ? '下注' : (hasEnoughMoney ? '冷却中' : '灵石不足') }}
       </el-button>
       
       <div class="dice-container">
@@ -45,11 +45,14 @@
       player() {
         return this.$store.player;
       },
+      hasEnoughMoney() {
+    return this.player.props.money >= this.betAmount;
+  },
       nextGameTime() {
         return this.player.nextGameTimes?.dice || 0;
       },
       canBet() {
-        return Date.now() >= this.nextGameTime;
+        return Date.now() >= this.nextGameTime && this.hasEnoughMoney;
       },
       diceImage() {
         return `../src/assets/dice${this.diceNumber}.gif`;
@@ -102,7 +105,7 @@
             break;
         }
   
-        const reward = won ? this.betAmount * 2 : 0;
+        const reward = won ? this.betAmount * 2 : this.betAmount;
         this.result = {
           dice,
           message: won ? `恭喜您赢得了 ${reward} 灵石！` : '很遗憾，您输了。',
