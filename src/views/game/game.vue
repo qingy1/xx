@@ -26,15 +26,14 @@
 </template>
 
 <script>
-import MessagePreview from './MessagePreview.vue';
+import MessagePreview from '../MessagePreview.vue';
 import tag from '@/components/tag.vue';
 import DiceGame from './Dicegame.vue';
 import RockPaperScissors from './rock.vue';
 import FortuneTelling from './fortunetelling.vue';
 import CheckIn from './checkin.vue';
-import GamblingStone from './GamblingStone.vue';
 import toe from './toe.vue';
-
+import SecretRealm from './SecretRealm.vue';  
 export default {
   components: {
     MessagePreview,
@@ -43,8 +42,8 @@ export default {
     RockPaperScissors,
     FortuneTelling,
     CheckIn,
-    GamblingStone,
     toe,
+    SecretRealm ,
   },
   data() {
     return {
@@ -52,11 +51,11 @@ export default {
       selectedGame: null,
       games: [
         { name: 'checkin', label: '签到', component: 'CheckIn' },
-        { name: 'dice', label: '骰子游戏', component: 'DiceGame' },
-        { name: 'rps', label: '剪刀石头布', component: 'RockPaperScissors' },
+        { name: 'dice', label: '骰子', component: 'DiceGame' },
+        { name: 'rps', label: '猜拳', component: 'RockPaperScissors' },
         { name: 'fortune', label: '算卦', component: 'FortuneTelling' },
-        { name: 'gambling-stone', label: '赌石游戏', component: 'GamblingStone' },
-        { name: 'toe', label: '井字棋', component: 'toe' },
+        { name: 'toe', label: '井棋', component: 'toe' },
+        { name: 'secret-realm', label: '秘境', component: 'SecretRealm' } ,
       ],
     }
   },

@@ -4,7 +4,7 @@ import home from '../views/homePage.vue';
 import index from '../views/indexPage.vue';
 import explore from '../views/explorePage.vue';
 import cultivate from '../views/cultivatePage.vue';
-import game from '../views/game.vue'
+import game from '../views/game/game.vue'
 import endlesstower from '../views/endlessPage.vue'
 import spiritfarm from '../views/spiritfarm.vue'
 import youli from '../views/npc.vue'
@@ -100,8 +100,13 @@ const routes = [
           path: '/leaderboardView',
           name: 'LeaderboardView',
           component: () => import('@/views/LeaderboardView.vue')
-        }
-
+        },
+        {
+            path: '/alchemy',
+            name: 'alchemy',
+            component: () => import('@/views/alchemyPage.vue')
+          }
+       
 ];
 const router = createRouter({
     history: createWebHashHistory(),

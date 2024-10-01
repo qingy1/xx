@@ -27,8 +27,6 @@ app.config.globalProperties.$notifys = (data) => {
 const { messages, addMessage, previewMessages } = useMessages();
 app.config.globalProperties.$addMessage = addMessage;
 app.config.globalProperties.$messages = messages;
-// 为组合式 API 提供 inject
-app.provide('addMessage', addMessage);
 const maxLv = 144;
 app.config.globalProperties.$maxLv = maxLv;
 

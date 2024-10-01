@@ -91,7 +91,7 @@
                 this.$addMessage({
                             category: '系统',
                             type: 'system',
-                            content: `[color=red]你[/color]在修炼时[color=#FF0000]${event.description}!`
+                            content: `[color=red]你[/color]在修炼时[color=#FF0000]${event.description}[/color]!`
                         });
                 switch (event.type) {
                     case 'resource':

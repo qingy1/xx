@@ -76,7 +76,8 @@ export const useMainStore = defineStore('main', {
                 dice: null,
                 rps: null,
                 fortune: null,
-                gamblingStone: null
+                gamblingStone: null,
+                secretrealm:0,
             },
             checkinStreak: 0,
             checkinDays: 0,

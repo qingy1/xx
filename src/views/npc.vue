@@ -1,5 +1,5 @@
 <template>
-  <div class="map-page md3-background">
+  <div class="npc-interaction md3-background">
     <div class="content-wrapper">
       <div class="location-info md3-card">
         <h3 class="md3-title">{{ currentLocation.name }}</h3>
@@ -20,14 +20,44 @@
                   class="md3-button">
              {{ npc.name }}
           </button>
-          <div class="md3-content">
-            <button v-for="direction in currentLocation.directions" 
-                    :key="direction.name" 
-                    @click="move(direction.name)"
-                    class="md3-button">
-              {{ direction.name }}
-            </button>
+        </div>
+      </div>
+      <div class="task-system md3-card" v-if="currentNPC">
+        <h3 class="md3-title">任务系统 - {{ currentNPC.name }}</h3>
+        <div class="md3-content">
+          <div v-if="currentNPC.tasks && currentNPC.tasks.length">
+            <h4>可用任务</h4>
+            <ul>
+              <li v-for="task in availableTasks" :key="task.id">
+                {{ task.title }}
+                <button @click="acceptTask(task)" class="md3-button">接受任务</button>
+              </li>
+            </ul>
+            
+            <h4>进行中的任务</h4>
+            <ul>
+              <li v-for="task in activeTasks" :key="task.id">
+                {{ task.title }} - 进度: {{ task.objective.current }}/{{ task.objective.amount }}
+                <button v-if="task.objective.current >= task.objective.amount" 
+                        @click="completeTask(task)"
+                        class="md3-button">
+                  完成任务
+                </button>
+              </li>
+            </ul>
           </div>
+          <p v-else>该 NPC 当前没有可用任务。</p>
+        </div>
+      </div>
+      <div class="navigation md3-card">
+        <h3 class="md3-title">导航</h3>
+        <div class="md3-content">
+          <button v-for="direction in currentLocation.directions" 
+                  :key="direction.name" 
+                  @click="move(direction.name)"
+                  class="md3-button">
+            {{ direction.name }}
+          </button>
         </div>
       </div>
     </div>
@@ -36,19 +66,25 @@
 
 <script>
 export default {
-  name: 'MapPage',
+  name: 'NpcInteraction',
   data() {
     return {
       texts: [],
       player: {},
       currentLocation: {},
+      currentNPC: null,
       worldMap: this.initializeWorldMap(),
       randomEvents: this.initializeRandomEvents()
     };
   },
   computed: {
-    cultivationPercentage() {
-      return (this.player.cultivation / this.player.maxCultivation) * 100;
+    availableTasks() {
+      return this.currentNPC && this.currentNPC.tasks 
+        ? this.currentNPC.tasks.filter(task => task.status === 'available')
+        : [];
+    },
+    activeTasks() {
+      return this.player.activeTasks || [];
     }
   },
   mounted() {
@@ -70,6 +106,7 @@ export default {
       const newLocation = this.worldMap[chosenDirection.destination];
       if (newLocation) {
         this.currentLocation = newLocation;
+        this.currentNPC = null;
         this.addLog(`你${direction}，来到了${newLocation.name}`);
         this.checkForRandomEvent();
       } else {
@@ -77,16 +114,42 @@ export default {
       }
     },
     interactWithNpc(npc) {
+      this.currentNPC = npc;
       const interactionMessages = {
         enemy: `你遇到了${npc.name}，准备战斗！`,
         friendly: `你与${npc.name}进行了友好的交谈。`,
         quest: `${npc.name}似乎有什么任务要交给你。`
       };
       this.addLog(interactionMessages[npc.type] || `你与${npc.name}互动了一番。`);
-      // 实现相应的处理逻辑
+    },
+    acceptTask(task) {
+      task.status = 'active';
+      if (!this.player.activeTasks) {
+    //    this.$set(this.player, 'activeTasks', []);
+        this.player.activeTasks=[]
+      }
+      this.player.activeTasks.push(task);
+      this.addLog(`你接受了任务：${task.title}`);
+    },
+    completeTask(task) {
+      task.status = 'completed';
+      if (!this.player.completedTasks) {
+      //  this.$set(this.player, 'completedTasks', []);
+        this.player.completedTasks=[]
+      }
+      this.player.completedTasks.push(task.id);
+      this.player.activeTasks = this.player.activeTasks.filter(t => t.id !== task.id);
+      this.giveRewards(task.rewards);
+      this.addLog(`你完成了任务：${task.title}`);
+    },
+    giveRewards(rewards) {
+      this.player.experience += rewards.experience;
+      this.player.cultivation += rewards.cultivation;
+      rewards.items.forEach(item => this.player.inventory.push(item));
+      this.addLog(`获得奖励：经验 ${rewards.experience}，修为 ${rewards.cultivation}，物品 ${rewards.items.join(', ')}`);
     },
     checkForRandomEvent() {
-      if (Math.random() < 0.3) { // 30% 触发随机事件的概率
+      if (Math.random() < 0.3) {
         const event = this.randomEvents[Math.floor(Math.random() * this.randomEvents.length)];
         this.addLog(event.description);
         this.handleEvent(event);
@@ -98,11 +161,11 @@ export default {
         cultivation: () => { this.player.cultivation += event.amount; },
         item: () => { /* 添加物品到背包逻辑 */ },
         skill: () => { /* 学习技能逻辑 */ },
-        lucky: () => { this.player.cultivation *= 0.9; } // 降低10%修为
+        lucky: () => { this.player.cultivation *= 0.9; }
       };
       if (eventHandlers[event.type]) {
         eventHandlers[event.type]();
-        this.$store.commit('setPlayer', this.player); // 更新玩家状态
+     //   this.$store.commit('setPlayer', this.player);
       }
     },
     scrollToBottom() {
@@ -120,8 +183,33 @@ export default {
           description: '城郊的一片大湖，环湖而行至少有千里的路程，四周人迹罕至。湖水清澈幽深不见底，似乎能感受到一般不寻常的气息。',
           coordinates: { x: 0, y: 0 },
           npcs: [
-            { name: '邪派散修', type: 'enemy' },
-            { name: '云渺仙子', type: 'quest' }
+            { 
+              name: '邪派散修', 
+              type: 'enemy' 
+            },
+            { 
+              name: '云渺仙子', 
+              type: 'quest',
+              tasks: [
+                {
+                  id: 'task1',
+                  title: '收集灵草',
+                  description: '为我收集10株灵草',
+                  type: 'collect',
+                  objective: {
+                    target: '灵草',
+                    amount: 10,
+                    current: 0
+                  },
+                  rewards: {
+                    experience: 100,
+                    items: ['低级丹药'],
+                    cultivation: 50
+                  },
+                  status: 'available'
+                }
+              ]
+            }
           ],
           directions: [
             { name: '往东走', destination: '东林', dx: 1, dy: 0 },
@@ -181,11 +269,12 @@ export default {
 </script>
 
 <style scoped>
-.map-page {
-  font-family: 'Roboto', sans-serif;
-  background-color: #f5f5f5;
+.npc-interaction {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--el-bg-color);
   min-height: 100vh;
   padding: 20px;
+  color: var(--el-text-color-primary);
 }
 
 .content-wrapper {
@@ -193,25 +282,21 @@ export default {
   margin: 0 auto;
 }
 
-.md3-background {
-  background-color: #f0f0f0;
-}
-
 .md3-card {
-  background-color: #ffffff;
+  background-color: var(--el-bg-color-secondary);
   border-radius: 16px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--el-box-shadow-light);
   margin-bottom: 20px;
   overflow: hidden;
 }
 
 .md3-title {
   font-size: 1.25rem;
-  font-weight: 500;
+  font-weight: 600;
   padding: 16px;
   margin: 0;
-  background-color: #a19ba9;
-  color: #ffffff;
+  background-color: var(--el-color-primary-light-3);
+  color: var(--el-color-primary);
 }
 
 .md3-content {
@@ -219,14 +304,13 @@ export default {
 }
 
 .md3-button {
-  background-color: #d5cae4;
-  color: #ffffff;
+  background-color: var(--el-color-primary);
+  color: var(--el-color-white);
   border: none;
   padding: 10px 16px;
-  border-radius: 20px;
+  border-radius: 8px;
   font-size: 0.875rem;
   font-weight: 500;
-  text-transform: uppercase;
   cursor: pointer;
   transition: background-color 0.3s;
   margin-right: 8px;
@@ -234,22 +318,7 @@ export default {
 }
 
 .md3-button:hover {
-  background-color: #c1bbce;
-}
-
-.cultivation-bar {
-  width: 100%;
-  height: 10px;
-  background-color: #e0e0e0;
-  border-radius: 5px;
-  overflow: hidden;
-  margin-top: 10px;
-}
-
-.cultivation-progress {
-  height: 100%;
-  background-color: #c6bed2;
-  transition: width 0.3s ease;
+  background-color: var(--el-color-primary-light-3);
 }
 
 .log-content {
@@ -262,9 +331,18 @@ export default {
   margin-bottom: 8px;
 }
 
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  margin-bottom: 10px;
+}
+
 @media (max-width: 600px) {
   .md3-card {
-    border-radius: 0;
+    border-radius: 12px;
   }
 }
 </style>

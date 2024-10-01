@@ -121,7 +121,7 @@ export default {
     created() {
         // 初始化玩家数据
         this.player = this.$store.player;
-
+console.log(this.player.farm)
         // 确保 player.farm 存在并且有所有必要的字段
         if (!this.player.farm) {
             this.player.farm = {
