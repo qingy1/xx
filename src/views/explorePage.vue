@@ -319,11 +319,6 @@
                             // 增加玩家总修为
                             this.player.maxCultivation = Math.floor(100 * Math.pow(2, this.player.level));
                             this.texts.push(`恭喜你突破了！当前境界：${this.$levelNames(this.player.level)}`);
-                            this.$addMessage({
-                            category: '系统',
-                            type: 'system',
-                            content: `恭喜你突破了！当前境界：[color=red]${this.$levelNames(this.player.level)}[/color]!`
-                        });
                         } else {
                             // 当前修为
                             this.player.cultivation += exp;

@@ -182,6 +182,7 @@ export default {
           name: '映日湖',
           description: '城郊的一片大湖，环湖而行至少有千里的路程，四周人迹罕至。湖水清澈幽深不见底，似乎能感受到一般不寻常的气息。',
           coordinates: { x: 0, y: 0 },
+              monsters: ['灵草精'],
           npcs: [
             { 
               name: '邪派散修', 

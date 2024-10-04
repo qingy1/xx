@@ -41,6 +41,7 @@ export const useMainStore = defineStore('main', {
             score: 0,
             level: 0,
             dodge: 0,
+            script: '',
             points: 0,
             attack: 10,
             health: 100,
@@ -49,49 +50,47 @@ export const useMainStore = defineStore('main', {
             taskNum: 0,
             version: 0.8,
             currency: 0,
-            energy: 100,
-            maxHealth: 100,
-            inventory: [],
+            gameWins: 0,
             isNewbie: false,
             shopData: [],
+            maxHealth: 100,
+            inventory: [],
             equipment: {
                 sutra: {},
                 armor: {},
                 weapon: {},
                 accessory: {}
             },
+            gameLosses: 0,
+            checkinDays: 0,
             achievement: {
                 pet: [],
                 monster: [],
                 equipment: []
             },
-            script: '',
+            // 离线时间
+            offlineTime: 0,
             cultivation: 0,
+            currentTitle: null,
             reincarnation: 0,
-            maxCultivation: 100,
-            backpackCapacity: 50,
-            sellingEquipmentData: [],
-            highestTowerFloor: 1,
-            nextGameTimes: {
-                dice: null,
-                rps: null,
-                fortune: null,
-                gamblingStone: null,
-                secretrealm:0,
-            },
             checkinStreak: 0,
-            checkinDays: 0,
+            nextGameTimes: {
+                rps: null,
+                dice: null,
+                fortune: null,
+                secretrealm: 0,
+                gamblingStone: null
+            },
+            maxCultivation: 100,
             lastCheckinDate: null,
+            backpackCapacity: 50,
+            isReceiveAwarded: false,
+            highestTowerFloor: 1,
             fortuneTellingDate: null,
-            gameWins: 0,
-            gameLosses: 0,
-            farm: {
-                level: 1,
-                experience: 0,
-                plots: [
-                ],
-                warehouse: {},
-              },
+            rewardedTowerFloors: [],
+            sellingEquipmentData: [],
+            isShowReceiveAwardedBox: false,
+            offlinesellingEquipmentData: []
         },
         // 怪物信息
         monster: {
@@ -113,25 +112,24 @@ export const useMainStore = defineStore('main', {
             map: []
         },
         mapScroll: 0,
-        fishingMap: [],
-        
+        fishingMap: []
     }),
     persist: {
         key: 'vuex',
-        paths: ['boss', 'player','farm'],
+        paths: ['boss', 'player'],
         storage: localStorage,
         serializer: {
             serialize: (state) => {
                 return JSON.stringify({
                     boss: crypto.encryption(state.boss),
-                    player: crypto.encryption(state.player),
+                    player: crypto.encryption(state.player)
                 });
             },
             deserialize: (value) => {
                 const state = JSON.parse(value);
                 return {
                     boss: crypto.decryption(state.boss),
-                    player: crypto.decryption(state.player),
+                    player: crypto.decryption(state.player)
                 };
             }
         }

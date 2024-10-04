@@ -1,217 +1,125 @@
 <template>
-  <div class="entertainment">
-    <div class="game-options">
-      <el-button v-for="(item, index) in buttonData" :key="index" @click="item.click"
-        :class="{ 'active': selectedGame && selectedGame.name === item.game.name }" v-text="item.text" />
-    </div>
-
-    <div class="game-container">
-      <router-view></router-view>
-      <MessagePreview />
-    </div>
-    <div v-if="selectedGame" class="game-container">
-      <component :is="selectedGame.component" @game-result="handleGameResult"></component>
-    </div>
-
-
-    <div class="stats">
-      <div class="attribute-box">
-        <div class="attribute" v-for="(item, index) in statsData" :key="index">
-          <span class="attribute-label">{{ item.name }}</span>
-          <span class="attribute-value">{{ item.value }}</span>
+    <div class="games">
+        <el-tabs v-model="tabs">
+            <el-tab-pane v-for="(item, index) in gameList" :label="item.label" :name="item.name">
+                <component :is="item.component" @game-result="processGameResult" />
+            </el-tab-pane>
+        </el-tabs>
+        <div class="stats">
+            <div class="attribute-box">
+                <el-row>
+                    <el-col :span="12" class="attribute-col" v-for="(item, index) in attributeList" :key="index">
+                        <div class="el-statistic">
+                            <div class="el-statistic__head">{{ item.name }}</div>
+                            <div class="el-statistic__content">
+                                <span class="el-statistic__number">{{ $formatNumberToChineseUnit(item.value) }}{{ item.unit }}</span>
+                            </div>
+                        </div>
+                    </el-col>
+                </el-row>
+            </div>
+            <el-button class="attribute-label" @click="$router.push('/home')">返回家中</el-button>
         </div>
-      </div>
     </div>
-  </div>
 </template>
 
 <script>
-import MessagePreview from '../MessagePreview.vue';
-import tag from '@/components/tag.vue';
-import DiceGame from './Dicegame.vue';
-import RockPaperScissors from './rock.vue';
-import FortuneTelling from './fortunetelling.vue';
-import CheckIn from './checkin.vue';
-import toe from './toe.vue';
-import SecretRealm from './SecretRealm.vue';  
-export default {
-  components: {
-    MessagePreview,
-    tag,
-    DiceGame,
-    RockPaperScissors,
-    FortuneTelling,
-    CheckIn,
-    toe,
-    SecretRealm ,
-  },
-  data() {
-    return {
-      player: {},
-      selectedGame: null,
-      games: [
-        { name: 'checkin', label: '签到', component: 'CheckIn' },
-        { name: 'dice', label: '骰子', component: 'DiceGame' },
-        { name: 'rps', label: '猜拳', component: 'RockPaperScissors' },
-        { name: 'fortune', label: '算卦', component: 'FortuneTelling' },
-        { name: 'toe', label: '井棋', component: 'toe' },
-        { name: 'secret-realm', label: '秘境', component: 'SecretRealm' } ,
-      ],
-    }
-  },
-  created() {
-    this.player = this.$store.player;
-    this.$nextTick(() => {
-      this.selectGame(this.games.find(game => game.name === 'checkin'));
-    });
+    import tag from '@/components/tag.vue';
+    import Toe from './toe.vue';
+    import CheckIn from './checkin.vue';
+    import DiceGame from './Dicegame.vue';
+    import SecretRealm from './SecretRealm.vue';
+    import FortuneTelling from './fortunetelling.vue';
+    import RockPaperScissors from './rock.vue';
 
-  },
-  mounted() {
-    this.checkDailyReset();
-  },
-  computed: {
-    buttonData() {
-      return this.games.map(game => ({
-        text: game.label,
-        click: () => this.selectGame(game),
-        game: game
-      }));
-    },
-    statsData() {
-      return [
-        { name: '签到天数', value: this.player.checkinDays },
-        { name: '灵石', value: this.player.props.money },
-        { name: '胜利次数', value: this.player.gameWins },
-        { name: '失败次数', value: this.player.gameLosses },
-      ];
-    }
-  },
-  methods: {
-    selectGame(game) {
-      this.$nextTick(() => {
-        this.selectedGame = game;
-      });
-    },
-    handleGameResult(result) {
-
-
-
-      if (result.success) {
-        this.player.gameWins++;
-        if (result.reward) {
-          if (typeof result.reward === 'object') {
-            for (const [key, value] of Object.entries(result.reward)) {
-              this.player.props[key] += value;
+    export default {
+        components: {
+            tag,
+            Toe,
+            CheckIn,
+            DiceGame,
+            SecretRealm,
+            FortuneTelling,
+            RockPaperScissors,
+        },
+        data () {
+            return {
+                tabs: 'checkin',
+                player: {},
+                selectedGame: null,
+                gameList: [
+                    { name: 'checkin', label: '签到', component: 'CheckIn' },
+                    { name: 'dice', label: '骰子', component: 'DiceGame' },
+                    { name: 'rps', label: '猜拳', component: 'RockPaperScissors' },
+                    { name: 'fortune', label: '算卦', component: 'FortuneTelling' },
+                    { name: 'toe', label: '井棋', component: 'Toe' },
+                    { name: 'secret-realm', label: '秘境', component: 'SecretRealm' }
+                ]
             }
-          } else {
-            this.player.props.money += result.reward;
-          }
+        },
+        watch: {
+            tabs (type) {
+                this.selectedGame = type;
+            }
+        },
+        created () {
+            this.player = this.$store.player;
+        },
+        mounted () {
+            this.checkDailyReset();
+        },
+        computed: {
+            attributeList () {
+                return [
+                    { name: '签到天数', unit: '天', value: this.player.checkinDays },
+                    { name: '拥有灵石', unit: '', value: this.player.props.money },
+                    { name: '胜利次数', unit: '次', value: this.player.gameWins },
+                    { name: '失败次数', unit: '次', value: this.player.gameLosses }
+                ];
+            }
+        },
+        methods: {
+            processGameResult (result) {
+                if (result.success) this.updatePlayerWins(result);
+                else this.updatePlayerLosses(result);
+            },
+            updatePlayerWins (result) {
+                this.player.gameWins++;
+                const reward = result.reward;
+                if (reward) {
+                    if (typeof reward === 'object') Object.entries(reward).forEach(([key, value]) => { this.player.props[key] += value; });
+                    else this.player.props.money += reward;
+                }
+            },
+            updatePlayerLosses (result) {
+                this.player.props.money -= result.reward;
+                this.player.gameLosses++;
+            },
+            checkDailyReset () {
+                const now = new Date();
+                const lastCheckinDate = new Date(this.player.lastCheckinDate);
+                if (now.toDateString() !== lastCheckinDate.toDateString()) this.player.checkedInToday = false;
+            }
         }
-      } else {
-        this.player.props.money -= result.reward;
-        this.player.gameLosses++;
-      }
-      this.$addMessage({
-        category: '系统',
-        type: 'system',
-        content: `[color=red]温某[/color]在[color=#FF0000]${this.selectedGame.label}中[/color]${result.success ? "成功" : "失败"}，${result.success ? "赢取" : "输掉"}了${result.reward}灵石。`
-      });
-    },
-    checkDailyReset() {
-      const now = new Date();
-      const lastCheckin = new Date(this.player.lastCheckinDate);
-      if (now.getDate() !== lastCheckin.getDate() || now.getMonth() !== lastCheckin.getMonth() || now.getFullYear() !== lastCheckin.getFullYear()) {
-        this.player.checkedInToday = false;
-      }
-    },
-  }
-}
+    }
 </script>
 
 <style scoped>
-.entertainment {
-  padding: 20px;
-  max-width: 800px;
-  margin: 0 auto;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-}
+    .game-container {
+        border-radius: 12px;
+        margin-bottom: 20px;
+    }
 
-.game-options {
-  display: flex;
-  justify-content: space-around;
-  margin-bottom: 20px;
-  background-color: var(--el-fill-color-light);
-  border-radius: 10px;
-  padding: 10px;
-}
+    .attribute-box {
+        margin-bottom: 10px;
+    }
 
-.game-options .el-button {
-  background-color: transparent;
-  border: none;
-  color: var(--el-color-primary);
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
+    .attribute-col {
+        margin-top: 10px;
+    }
 
-.game-options .el-button.active {
-  background-color: var(--el-color-primary);
-  color: var(--el-color-white);
-  border-radius: 8px;
-}
-
-.game-container {
-  background-color: var(--el-bg-color);
-  border-radius: 12px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: var(--el-box-shadow-light);
-}
-
-.stats {
-  background-color: var(--el-fill-color-light);
-  padding: 15px;
-  border-radius: 12px;
-}
-
-.attribute-box {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.attribute {
-  background-color: var(--el-bg-color);
-  border-radius: 8px;
-  padding: 10px 15px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex: 1 1 calc(50% - 5px);
-  box-shadow: var(--el-box-shadow-lighter);
-}
-
-.attribute-label {
-  font-weight: 500;
-  color: var(--el-text-color-primary);
-}
-
-.attribute-value {
-  font-weight: 600;
-  color: var(--el-color-primary);
-}
-
-@media (max-width: 768px) {
-  .game-options {
-    flex-wrap: wrap;
-  }
-
-  .game-options .el-button {
-    flex: 1 0 40%;
-    margin: 5px;
-  }
-
-  .attribute {
-    flex: 1 1 100%;
-  }
-}
+    .attribute-label {
+        margin: 15px 0;
+        width: 40%;
+    }
 </style>
