@@ -105,6 +105,11 @@ const routes = [
             path: '/alchemy',
             name: 'alchemy',
             component: () => import('@/views/alchemyPage.vue')
+          },
+          {
+            path: '/refining',
+            name: 'refining',
+            component: () => import('@/views/refiningPage.vue')
           }
        
 ];

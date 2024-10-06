@@ -71,6 +71,7 @@ export const useMainStore = defineStore('main', {
             // 离线时间
             offlineTime: 0,
             cultivation: 0,
+            refiningExp: 0,
             currentTitle: null,
             reincarnation: 0,
             checkinStreak: 0,
@@ -81,6 +82,14 @@ export const useMainStore = defineStore('main', {
                 secretrealm: 0,
                 gamblingStone: null
             },
+            materials: [
+                { id: 1, name: '精铁', quality: 'info', count: 500 },
+                { id: 2, name: '玄铁', quality: 'success', count: 50 },
+                { id: 3, name: '寒铁', quality: 'primary', count: 50 },
+                { id: 4, name: '陨铁', quality: 'warning', count: 100 },
+              ],
+              refiningExp: 0,
+              miningExp:0,
             maxCultivation: 100,
             lastCheckinDate: null,
             backpackCapacity: 50,

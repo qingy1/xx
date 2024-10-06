@@ -404,7 +404,9 @@ console.log(this.player.farm)
 }
 
 .el-button {
-    margin-top: 10px;
+    display: flex;
+    justify-content: center;  /* 水平居中 */
+    align-items: center; 
 }
 
 @media (max-width: 768px) {
