@@ -1,5 +1,5 @@
 <template>
-  <div class="refining-page">   
+  <div class="refining-page">
     <el-tabs v-model="activeTab">
       <el-tab-pane label="炼器" name="refining">
         <div class="refining-level">
@@ -11,37 +11,30 @@
           <div class="materials-section">
             <h3>材料</h3>
             <div class="material-list">
-              <tag v-for="material in materials" 
-                   :key="material.id" 
-                   :type="material.quality" 
-                   @click="selectMaterial(material)"
-                   class="material-item">
+              <tag v-for="material in materials" :key="material.id" :type="material.quality"
+                @click="selectMaterial(material)" class="material-item">
                 {{ material.name }} ({{ material.count }})
               </tag>
             </div>
           </div>
-    
+
           <!-- 炼器主界面 -->
           <div class="refining-main">
             <div class="refining-device" :class="{ 'refining-active': isRefining }">
               <template v-if="!isRefining">
-                <tag v-if="selectedEquipments.length > 0" 
-                     :type="selectedEquipments[0].quality" 
-                     class="selected-equipment">
+                <tag v-if="selectedEquipments.length > 0" :type="selectedEquipments[0].quality"
+                  class="selected-equipment">
                   {{ selectedEquipments.length }}件装备待炼制
                 </tag>
               </template>
               <template v-else>
-                <el-progress type="circle" :percentage="refiningProgress.toFixed(2)"></el-progress>
-               
+                <el-progress type="circle" :percentage="refiningProgress"></el-progress>
               </template>
             </div>
-            <el-button type="primary" 
-                       @click="startRefining" 
-                       :disabled="!canRefine || isRefining">
+            <el-button type="primary" @click="startRefining" :disabled="!canRefine || isRefining">
               开始炼器
-            </el-button>             <p  v-if="isRefining " >剩余时间: {{ remainingTime }}秒</p>
-
+            </el-button>
+            <p v-if="isRefining">剩余时间: {{ remainingTime }}秒</p>
           </div>
         </div>
 
@@ -50,11 +43,8 @@
           <h3>炼器结果</h3>
           <div class="equipment-list-container">
             <div class="equipment-list">
-              <tag v-for="(equipment, index) in refinedEquipments" 
-                   :key="index"
-                   :type="equipment.quality"
-                   @click="showEquipmentDetails(equipment)"
-                   class="equipment-item">
+              <tag v-for="(equipment, index) in refinedEquipments" :key="index" :type="equipment.quality"
+                @click="showEquipmentDetails(equipment)" class="equipment-item">
                 {{ equipment.name }}
               </tag>
             </div>
@@ -62,41 +52,57 @@
           <el-button @click="collectAllRefinedEquipments">全部收入背包</el-button>
         </div>
       </el-tab-pane>
-      
+
       <el-tab-pane label="精炼" name="refine">
         <div class="refine-container">
           <div class="inventory-section">
             <h3>背包</h3>
             <div class="equipment-list-container">
               <div class="equipment-list">
-                <tag v-for="(equipment, index) in player.inventory" 
-                     :key="index"
-                     :type="equipment.quality"
-                     @click="selectEquipmentForRefine(equipment)"
-                     :class="{'selected': selectedForRefine.includes(equipment)}"
-                     class="equipment-item">
+                <tag v-for="(equipment, index) in player.inventory" :key="index" :type="equipment.quality"
+                  @click="selectEquipmentForRefine(equipment)" :class="{'selected': isSelectedForRefine(equipment)}"
+                  class="equipment-item">
                   {{ equipment.name }}
                 </tag>
               </div>
             </div>
           </div>
-          
+
           <div class="refine-main">
-            <h3>已选择装备 ({{ selectedForRefine.length }}/5)</h3>
-            <div class="selected-equipments">
-              <tag v-for="(equipment, index) in selectedForRefine" 
-                   :key="index"
-                   :type="equipment.quality"
-                   @click="unselectEquipmentForRefine(equipment)"
-                   class="equipment-item">
-                {{ equipment.name }}
-              </tag>
-            </div>
-            <el-button type="primary" 
-                       @click="startRefine" 
-                       :disabled="selectedForRefine.length !== 5">
-              开始精炼
-            </el-button>
+            <el-radio-group v-model="refineMode">
+              <el-radio :value="'random'">随机精炼</el-radio>
+              <el-radio :value="'targeted'">定向精炼</el-radio>
+            </el-radio-group>
+
+            <template v-if="refineMode === 'random'">
+              <h3>已选择装备 ({{ selectedForRefine.length }}/5)</h3>
+              <div class="selected-equipments">
+                <tag v-for="(equipment, index) in selectedForRefine" :key="index" :type="equipment.quality"
+                  @click="unselectEquipmentForRefine(equipment)" class="equipment-item">
+                  {{ equipment.name }}
+                </tag>
+              </div>
+              <el-button type="primary" @click="startRandomRefine" :disabled="selectedForRefine.length !== 5">
+                开始随机精炼
+              </el-button>
+            </template>
+
+            <template v-else>
+              <h3>选择装备进行定向精炼</h3>
+              <div class="selected-equipments">
+                <tag v-if="selectedForTargetedRefine" :type="selectedForTargetedRefine.quality"
+                  @click="unselectEquipmentForTargetedRefine" class="equipment-item">
+                  {{ selectedForTargetedRefine.name }}
+                </tag>
+              </div>
+              <p>需要陨铁: {{ requiredMeteoriteIron }}</p>
+              <el-button type="primary" @click="startTargetedRefine" :disabled="!canStartTargetedRefine">
+                开始定向精炼
+              </el-button>
+              <el-button v-if="refinedEquipments.length > 0" type="success" @click="collectRefinedEquipment">
+                收入背包
+              </el-button>
+            </template>
           </div>
         </div>
       </el-tab-pane>
@@ -108,46 +114,38 @@
             <el-progress :percentage="miningExpPercentage" :format="formatMiningExp"></el-progress>
           </div>
           <div class="ore-list">
-              <tag v-for="ore in player.materials" 
-                   :key="ore.id" 
-                   :type="ore.quality" 
-                   class="ore-item">
-                {{ ore.name }}: {{ ore.count }}
-              </tag>
-            </div>
+            <tag v-for="ore in player.materials" :key="ore.id" :type="ore.quality" class="ore-item">
+              {{ ore.name }}: {{ ore.count }}
+            </tag>
+          </div>
           <div class="mining-area">
             <div class="mining-device" :class="{ 'mining-active': isMining }">
               <template v-if="!isMining">
                 <p>点击开始挖矿</p>
               </template>
               <template v-else>
-                <el-progress type="circle" :percentage="miningProgress.toFixed(2)"></el-progress>
-             
+                <el-progress type="circle" :percentage="miningProgress"></el-progress>
               </template>
             </div>
             <el-button type="primary" @click="toggleMining">
-              {{ isMining ? '停止挖矿' : '开始挖矿' }}    
+              {{ isMining ? '停止挖矿' : '开始挖矿' }}
             </el-button>
             <p v-if="isMining">已挖矿: {{ miningTime }}秒</p>
-          </div>
-          <div class="mining-results">
-
-
           </div>
         </div>
       </el-tab-pane>
     </el-tabs>
-
+    <el-button class="attribute-label" @click="$router.push('/home')">返回家中</el-button>
     <!-- 装备详情弹窗 -->
     <el-dialog v-model="equipmentDetailsVisible" title="装备详情">
       <div v-if="selectedEquipmentDetails">
         <p>名称: {{ selectedEquipmentDetails.name }}</p>
-        <p>品质: {{  $levels[selectedEquipmentDetails.quality] }}</p>
+        <p>品质: {{ $levels[selectedEquipmentDetails.quality] }}</p>
         <p>攻击: {{ selectedEquipmentDetails.attack }}</p>
         <p>防御: {{ selectedEquipmentDetails.defense }}</p>
         <p>生命: {{ selectedEquipmentDetails.health }}</p>
-        <p>闪避: {{ (selectedEquipmentDetails.dodge * 100).toFixed(2) }}%</p>
-        <p>暴击: {{ (selectedEquipmentDetails.critical * 100).toFixed(2) }}%</p>
+        <p>闪避: {{ (selectedEquipmentDetails.dodge * 100) }}%</p>
+        <p>暴击: {{ (selectedEquipmentDetails.critical * 100) }}%</p>
       </div>
       <template #footer>
         <span class="dialog-footer">
@@ -181,6 +179,9 @@ export default {
       miningProgress: 0,
       miningTime: 0,
       miningInterval: null,
+      refineMode: 'random',
+      selectedForTargetedRefine: null,
+      requiredMeteoriteIron: 50,
     };
   },
   computed: {
@@ -188,10 +189,10 @@ export default {
       return this.selectedEquipments.length > 0;
     },
     materials(){
-      return this. $store.player.materials
+      return this. $store.player.materials;
     },
     refiningLevel() {
-      return Math.floor(Math.sqrt(this.player.refiningExp / 100)) + 1;
+      return Math.floor(Math.sqrt(this.player.refiningExp / 1000)) + 1;
     },
     refiningExpPercentage() {
       const nextLevelExp = this.calculateNextLevelExp(this.refiningLevel);
@@ -199,27 +200,52 @@ export default {
       return ((this.player.refiningExp - currentLevelExp) / (nextLevelExp - currentLevelExp)) * 100;
     },
     miningLevel() {
-      return Math.floor(Math.sqrt(this.player.miningExp / 100)) + 1;
+      return Math.floor(Math.sqrt(this.player.miningExp / 1000)) + 1;
     },
     miningExpPercentage() {
       const nextLevelExp = this.calculateNextLevelExp(this.miningLevel);
       const currentLevelExp = this.calculateNextLevelExp(this.miningLevel - 1);
       return ((this.player.miningExp - currentLevelExp) / (nextLevelExp - currentLevelExp)) * 100;
-    }
+    },
+    canStartTargetedRefine() {
+      return this.selectedForTargetedRefine && 
+             this.player.materials.find(m => m.name === '陨铁')?.count >= this.requiredMeteoriteIron;
+    },
   },
   methods: {
     selectEquipmentForRefine(equipment) {
-      if (this.selectedForRefine.length < 5 && !this.selectedForRefine.includes(equipment)) {
-        this.selectedForRefine.push(equipment);
+      if (this.refineMode === 'random') {
+        if (this.selectedForRefine.length < 5 && !this.selectedForRefine.includes(equipment)) {
+          this.selectedForRefine.push(equipment);
+        }
+      } else {
+        this.selectedForTargetedRefine = equipment;
+        this.calculateRequiredMeteoriteIron();
       }
     },
     unselectEquipmentForRefine(equipment) {
-      const index = this.selectedForRefine.indexOf(equipment);
-      if (index > -1) {
-        this.selectedForRefine.splice(index, 1);
+      if (this.refineMode === 'random') {
+        const index = this.selectedForRefine.indexOf(equipment);
+        if (index > -1) {
+          this.selectedForRefine.splice(index, 1);
+        }
       }
     },
-    startRefine() {
+    unselectEquipmentForTargetedRefine() {
+      this.requiredMeteoriteIron = 50;
+    },
+    isSelectedForRefine(equipment) {
+      return this.refineMode === 'random' 
+        ? this.selectedForRefine.includes(equipment)
+        : this.selectedForTargetedRefine === equipment;
+    },
+    calculateRequiredMeteoriteIron() {
+      if (this.selectedForTargetedRefine) {
+        const refineTimes = this.selectedForTargetedRefine.refineTimes || 0;
+        this.requiredMeteoriteIron = 50 + refineTimes * 10;
+      }
+    },
+    startRandomRefine() {
       if (this.selectedForRefine.length !== 5) return;
       const baseQuality = this.selectedForRefine[0].quality;
       if (!this.selectedForRefine.every(e => e.quality === baseQuality)) {
@@ -233,8 +259,6 @@ export default {
         return;
       }
       const newQuality = qualityOrder[currentQualityIndex + 1];
-      console.log("原始品质",qualityOrder[currentQualityIndex])
-      console.log("精炼品质",qualityOrder[currentQualityIndex+1])
       const newEquipment = this.generateRandomEquipment({ name: '精炼', quality: newQuality });
       this.selectedForRefine.forEach(e => {
         const index = this.player.inventory.indexOf(e);
@@ -246,6 +270,54 @@ export default {
       this. $notifys({ title: '精炼成功', message: `成功精炼出${this.$levels[newQuality]}品质的${newEquipment.name}` });
       this.selectedForRefine = [];
     },
+    startTargetedRefine() {
+  if (!this.canStartTargetedRefine) return;
+  
+  const meteoriteIron = this.player.materials.find(m => m.name === '陨铁');
+  meteoriteIron.count -= this.requiredMeteoriteIron;
+  
+  const equipment = this.selectedForTargetedRefine;
+  const successRate = Math.min(0.9, 0.5 + this.refiningLevel * 0.02);
+  
+  if (Math.random() < successRate) {
+    const enhancedEquipment = this.enhanceEquipment(equipment);
+    enhancedEquipment.refineTimes = (enhancedEquipment.refineTimes || 0) + 1;
+    this.refinedEquipments = [enhancedEquipment]; // 将精炼后的装备放入refinedEquipments数组
+    this.$notifys({ 
+      title: '精炼成功', 
+      message: `${enhancedEquipment.name} 属性提升！点击"收入背包"按钮以保存，或继续精炼。` 
+    });
+  } else {
+    this.$notifys({ title: '精炼失败', message: `${equipment.name} 精炼失败，但未被损坏。` });
+  }
+  
+  this.gainRefiningExp();
+
+  this.calculateRequiredMeteoriteIron();
+},
+
+collectRefinedEquipment() {
+  if (this.refinedEquipments.length === 0) return;
+  
+  const refinedEquipment = this.refinedEquipments[0];
+  const oldEquipmentIndex = this.player.inventory.findIndex(e => e === this.selectedForTargetedRefine);
+  
+  if (oldEquipmentIndex !== -1) {
+    this.player.inventory.splice(oldEquipmentIndex, 1, refinedEquipment);
+    this.$notifys({ title: '装备更新', message: `${refinedEquipment.name} 已更新并放入背包` });
+  } else {
+    if (this.player.inventory.length < this.player.backpackCapacity) {
+      this.player.inventory.push(refinedEquipment);
+      this.$notifys({ title: '新装备入库', message: `${refinedEquipment.name} 已放入背包` });
+    } else {
+      this.$notifys({ title: '背包已满', message: '无法收入新的装备' });
+      return;
+    }
+  }
+  
+  this.refinedEquipments = [];
+  this.selectedForTargetedRefine = null;
+},
     selectMaterial(material) {
       if (material.count >= 50) {
         const newEquipment = this.generateRandomEquipment(material);
@@ -267,7 +339,7 @@ export default {
         case 'accessory':
           equipment = equip.equip_Accessorys(equipmentLevel, false);
           break;
-        case 'sutra':
+          case 'sutra':
           equipment = equip.equip_Sutras(equipmentLevel, false);
           break;
       }
@@ -325,14 +397,13 @@ export default {
     },
     enhanceEquipment(equipment) {
       const enhancedEquipment = { ...equipment };
-      const enhanceRate = Math.random() * 0.2 + 0.1 + (this.refiningLevel * 0.01);
+      const enhanceRate = 0.05 + (this.refiningLevel * 0.05);
       
       enhancedEquipment.attack = Math.floor(enhancedEquipment.attack * (1 + enhanceRate));
       enhancedEquipment.defense = Math.floor(enhancedEquipment.defense * (1 + enhanceRate));
       enhancedEquipment.health = Math.floor(enhancedEquipment.health * (1 + enhanceRate));
       enhancedEquipment.dodge = Math.min(enhancedEquipment.dodge * (1 + enhanceRate), 0.5);
       enhancedEquipment.critical = Math.min(enhancedEquipment.critical * (1 + enhanceRate), 0.5);
-      
       enhancedEquipment.score = equip.calculateEquipmentScore(
         enhancedEquipment.dodge,
         enhancedEquipment.attack,
@@ -346,12 +417,12 @@ export default {
     gainRefiningExp() {
       const qualityExpMap = {
         'info': 1,
-        'success': 5,
-        'primary': 10,
-        'purple': 20,
-        'warning': 30,
-        'danger': 40,
-        'pink': 50
+        'success': 1,
+        'primary': 2,
+        'purple': 3,
+        'warning': 5,
+        'danger': 10,
+        'pink': 20
       };
 
       let totalExp = this.refinedEquipments.reduce((acc, equipment) => {
@@ -361,21 +432,21 @@ export default {
       this.player.refiningExp += totalExp;
       
       const oldLevel = this.refiningLevel;
-      const newLevel = Math.floor(Math.sqrt(this.player.refiningExp / 100)) + 1;
+      const newLevel = Math.floor(Math.sqrt(this.player.refiningExp / 1000)) + 1;
       
       if (newLevel > oldLevel) {
         this.$notifys({ title: '炼器等级提升', message: `炼器等级提升到${newLevel}级！` });
       }
     },
     calculateNextLevelExp(level) {
-      return 100 * Math.pow(level, 2);
+      return 1000 * Math.pow(level, 2);
     },
     formatRefiningExp(percentage) {
       const currentLevelExp = this.calculateNextLevelExp(this.refiningLevel - 1);
       const nextLevelExp = this.calculateNextLevelExp(this.refiningLevel);
       const currentExp = this.player.refiningExp - currentLevelExp;
       const neededExp = nextLevelExp - currentLevelExp;
-      return `${currentExp.toFixed(0)}/${neededExp.toFixed(0)}`;
+      return `${currentExp}/${neededExp}`;
     },
     showEquipmentDetails(equipment) {
       this.selectedEquipmentDetails = equipment;
@@ -469,11 +540,11 @@ export default {
       }
     },
     gainMiningExp(results) {
-      const expGained = Object.values(results).reduce((total, count) => total + count, 0) * 10;
+      const expGained = this.miningLevel * 10;
       this.player.miningExp += expGained;
       
       const oldLevel = this.miningLevel;
-      const newLevel = Math.floor(Math.sqrt(this.player.miningExp / 100)) + 1;
+      const newLevel = Math.floor(Math.sqrt(this.player.miningExp / 1000)) + 1;
       
       if (newLevel > oldLevel) {
         this.$notifys({ title: '挖矿等级提升', message: `挖矿等级提升到${newLevel}级！` });
@@ -484,7 +555,7 @@ export default {
       const nextLevelExp = this.calculateNextLevelExp(this.miningLevel);
       const currentExp = this.player.miningExp - currentLevelExp;
       const neededExp = nextLevelExp - currentLevelExp;
-      return `${currentExp.toFixed(0)}/${neededExp.toFixed(0)}`;
+      return `${currentExp}/${neededExp}`;
     },
   }
 }

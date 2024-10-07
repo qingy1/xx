@@ -949,11 +949,9 @@
                             this.equipAllShow = true;
                         }
                     },
-                    { text: '游历四方', handler: () => this.$router.push('/youli') },
                     { text: '修仙日志', handler: () => this.$router.push('/messages') },
                     { text: '灵草苑', handler: () => this.$router.push('/spiritfarm') },
                     { text: '铸器坊', handler: () => this.$router.push('/refining') },
-
                     { text: '无尽塔', handler: () => this.$router.push('/endlesstower') },
                     { text: '游乐坊', handler: () => this.$router.push('/game') },
                     { text: '世界BOSS', handler: () => this.$router.push('/boss') },

@@ -110,8 +110,7 @@ const routes = [
             path: '/refining',
             name: 'refining',
             component: () => import('@/views/refiningPage.vue')
-          }
-       
+          } 
 ];
 const router = createRouter({
     history: createWebHashHistory(),
