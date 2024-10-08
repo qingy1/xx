@@ -941,7 +941,7 @@
                                 this.$notifys({ title: '实力不足提示', message: `外面太危险了, 请突破到${this.$levelNames(10)}再出去吧!` });
                                 return;
                             }
-                            this.$router.push('/map');
+                            this.$router.push('/combined-exploration');
                         }
                     },
                     {

@@ -1,0 +1,30 @@
+{
+    "chapters": [
+      {
+        "id": 1,
+        "title": "开始冒险",
+        "description": "这是你在仙侠世界的第一个故事。",
+        "tasks": [
+          {
+            "description": "与村长对话",
+            "dialogue": "你好，年轻人。开始你的冒险之旅吧。",
+            "options": [
+              {
+                "text": "接受",
+                "result": "获得基础装备"
+              },
+              {
+                "text": "拒绝",
+                "result": "无变化"
+              }
+            ]
+          }
+        ],
+        "reward": {
+          "exp": 100,
+          "items": ["基础长剑"]
+        }
+      }
+    ],
+    "updateInterval": "weekly"
+  }

@@ -7,8 +7,9 @@ import cultivate from '../views/cultivatePage.vue';
 import game from '../views/game/game.vue'
 import endlesstower from '../views/endlessPage.vue'
 import spiritfarm from '../views/spiritfarm.vue'
-import youli from '../views/npc.vue'
+import TabsComponent from '../views/TabsComponent.vue';
 import { createRouter, createWebHashHistory } from 'vue-router';
+
 
 const routes = [
     {
@@ -84,14 +85,6 @@ const routes = [
         component: spiritfarm
     },
     {
-        path: '/youli',
-        name: 'youli',
-        meta: {
-            keepAlive: false
-        },
-        component: youli
-    },
-    {
         path: '/messages',
         name: 'Messages',
         component: () => import('@/views/MessagePage.vue')
@@ -110,7 +103,27 @@ const routes = [
             path: '/refining',
             name: 'refining',
             component: () => import('@/views/refiningPage.vue')
-          } 
+          } ,
+          {
+            path: '/story/:dungeonId',
+            name: 'storyPage',
+            component: () => import('@/views/storyPage.vue')
+          } ,
+          {
+            path: '/ex',
+            name: 'ex',
+            component: () => import('@/views/exploreIndex.vue')
+          } ,
+          {
+            path: '/exx',
+            name: 'exx',
+            component: () => import('@/views/ex.vue')
+          } ,
+          {
+            path: '/combined-exploration',
+            name: 'CombinedExploration',
+            component: TabsComponent
+        }
 ];
 const router = createRouter({
     history: createWebHashHistory(),

@@ -411,7 +411,7 @@ collectRefinedEquipment() {
         enhancedEquipment.critical,
         enhancedEquipment.defense
       );
-
+console.log(enhancedEquipment)
       return enhancedEquipment;
     },
     gainRefiningExp() {
@@ -428,9 +428,7 @@ collectRefinedEquipment() {
       let totalExp = this.refinedEquipments.reduce((acc, equipment) => {
         return acc + qualityExpMap[equipment.quality] || 0;
       }, 0);
-
       this.player.refiningExp += totalExp;
-      
       const oldLevel = this.refiningLevel;
       const newLevel = Math.floor(Math.sqrt(this.player.refiningExp / 1000)) + 1;
       

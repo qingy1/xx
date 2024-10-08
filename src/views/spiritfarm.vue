@@ -18,7 +18,7 @@
                 天气: {{ currentWeather }}
             </div>
         </div>
-        
+
         <!-- 灵田网格，显示每一块灵田的状态 -->
         <div class="farm-grid">
             <div v-for="(plot, index) in player.farm.plots" :key="index" class="plot">
@@ -30,20 +30,17 @@
                 </div>
                 <!-- 如果灵田中还没有种植药草，提供一个按钮来种植药草 -->
                 <el-button v-else @click="showPlantModal(index)" size="small">种植</el-button>
-                
+
                 <!-- 提供对灵田中药草执行操作的按钮，例如浇水、施肥、除虫和收获 -->
                 <div class="plot-actions" v-if="plot.herb">
-                    <el-button @click="water(index)" size="small"
-                        :disabled="plot.herb.stage === 'harvested'">浇水</el-button>
-                    <el-button @click="applyFertilizer(index)" size="small"
-                        :disabled="plot.herb.stage === 'harvested'">施肥</el-button>
+                    <el-button @click="water(index)" size="small" :disabled="plot.herb.stage === 'harvested'">浇水</el-button>
+                    <el-button @click="applyFertilizer(index)" size="small" :disabled="plot.herb.stage === 'harvested'">施肥</el-button>
                     <el-button @click="removePest(index)" size="small" v-if="plot.hasPest">除虫</el-button>
-                    <el-button @click="harvest(index)" size="small"
-                        :disabled="plot.herb.stage !== 'mature'">收获</el-button>
+                    <el-button @click="harvest(index)" size="small" :disabled="plot.herb.stage !== 'mature'">收获</el-button>
                 </div>
             </div>
         </div>
-        
+
         <!-- 灵田操作按钮，例如升级灵田、扩建灵田、查看仓库和市场 -->
         <div class="farm-actions">
             <el-button @click="upgradeFarm" :disabled="!canUpgrade">升级灵田 ({{ upgradeCost }}灵石)</el-button>
@@ -76,8 +73,7 @@
         <el-dialog v-model="marketVisible" title="市场" width="30%">
             <div v-for="herb in availableHerbs" :key="herb.name">
                 {{ herb.name }}: {{ herb.value }} 灵石
-                <el-button @click="sellHerb(herb)" size="small"
-                    :disabled="!player.farm.warehouse[herb.name]">出售</el-button>
+                <el-button @click="sellHerb(herb)" size="small" :disabled="!player.farm.warehouse[herb.name]">出售</el-button>
             </div>
         </el-dialog>
     </div>
@@ -92,37 +88,31 @@ export default {
     name: 'SpiritFarm',
     data() {
         return {
-            player: {}, // 存储玩家信息的对象
-            plantModalVisible: false, // 控制种植药草的弹窗可见性
-            warehouseVisible: false, // 控制仓库弹窗的可见性
-            marketVisible: false, // 控制市场弹窗的可见性
-            selectedHerb: null, // 当前选择的药草
-            selectedPlot: null, // 当前选择的灵田编号
-            availableHerbs: AVAILABLE_HERBS, // 可供种植的药草列表
-            currentWeather: '晴朗', // 当前天气
-            weathers: WEATHERS, // 可供选择的天气列表
-            weatherInterval: null, // 用于存储天气变化的定时器
+            player: {},
+            plantModalVisible: false,
+            warehouseVisible: false,
+            marketVisible: false,
+            selectedHerb: null,
+            selectedPlot: null,
+            availableHerbs: AVAILABLE_HERBS,
+            currentWeather: '晴朗',
+            weathers: WEATHERS,
+            weatherInterval: null,
         };
     },
     computed: {
-        // 计算升级需要的经验值
         experienceNeeded() {
             return this.player.farm.level * 100;
         },
-        // 计算升级需要的灵石数量
         upgradeCost() {
             return this.player.farm.level * 500;
         },
-        // 判断是否符合升级条件（经验足够且灵石足够）
         canUpgrade() {
             return this.player.farm.experience >= this.experienceNeeded && this.player.props.money >= this.upgradeCost;
         },
     },
     created() {
-        // 初始化玩家数据
         this.player = this.$store.player;
-console.log(this.player.farm)
-        // 确保 player.farm 存在并且有所有必要的字段
         if (!this.player.farm) {
             this.player.farm = {
                 level: 1,
@@ -132,7 +122,6 @@ console.log(this.player.farm)
             };
         }
 
-        // 确保灵田 plots 存在并初始化
         if (!this.player.farm.plots || this.player.farm.plots.length === 0) {
             this.player.farm.plots = [{ herb: null, hasPest: false }];
         }
@@ -145,21 +134,16 @@ console.log(this.player.farm)
         if (typeof this.player.farm.experience !== 'number') {
             this.player.farm.experience = 0;
         }
-
-        // 开始天气循环
         this.startWeatherCycle();
     },
     beforeUnmount() {
-        // 组件卸载前停止天气循环
         this.stopWeatherCycle();
     },
     methods: {
-        // 显示种植药草的弹窗
         showPlantModal(index) {
             this.selectedPlot = index;
             this.plantModalVisible = true;
         },
-        // 进行药草种植操作
         plant() {
             if (this.selectedHerb && this.selectedPlot !== null) {
                 const newHerb = { ...this.selectedHerb, stage: 'seed' };
@@ -170,13 +154,11 @@ console.log(this.player.farm)
             this.plantModalVisible = false;
             this.selectedHerb = null;
         },
-        // 使药草成长的函数
         growHerb(plotIndex) {
             const plot = this.player.farm.plots[plotIndex];
             const herb = plot.herb;
             let currentStageIndex = 0;
 
-            // 内部函数，用于根据生长阶段变化以及天气调整生长时间
             const grow = () => {
                 if (currentStageIndex < GROWTH_STAGES.length - 1) {
                     currentStageIndex++;
@@ -201,7 +183,6 @@ console.log(this.player.farm)
 
             setTimeout(grow, herb.growthTime / 3);
         },
-        // 浇水操作
         water(plotIndex) {
             const herb = this.player.farm.plots[plotIndex].herb;
             if (herb && herb.stage !== 'mature') {
@@ -212,7 +193,6 @@ console.log(this.player.farm)
                 }
             }
         },
-        // 施肥操作
         applyFertilizer(plotIndex) {
             const herb = this.player.farm.plots[plotIndex].herb;
             if (herb && herb.stage !== 'mature' && this.player.props.money >= 50) {
@@ -226,7 +206,6 @@ console.log(this.player.farm)
                 ElMessage.warning('灵石不足或植物已成熟，无法施肥');
             }
         },
-        // 除虫操作
         removePest(plotIndex) {
             if (this.player.props.money >= 30) {
                 this.player.props.money -= 30;
@@ -236,7 +215,6 @@ console.log(this.player.farm)
                 ElMessage.warning('灵石不足，无法除虫');
             }
         },
-        // 收获操作
         harvest(plotIndex) {
             const herb = this.player.farm.plots[plotIndex].herb;
             if (herb && herb.stage === 'mature') {
@@ -247,7 +225,6 @@ console.log(this.player.farm)
                 ElMessage.success(`成功收获了${herb.name}`);
             }
         },
-        // 升级灵田操作
         upgradeFarm() {
             if (this.canUpgrade) {
                 this.player.props.money -= this.upgradeCost;
@@ -258,7 +235,6 @@ console.log(this.player.farm)
                 ElMessage.warning('经验或灵石不足，无法升级灵田');
             }
         },
-        // 扩建灵田操作
         expandFarm() {
             if (this.player.farm.plots.length < 9 && this.player.props.money >= 1000) {
                 this.player.props.money -= 1000;
@@ -268,7 +244,6 @@ console.log(this.player.farm)
                 ElMessage.warning('灵石不足或已达到最大灵田数量，无法扩建');
             }
         },
-        // 检查是否满足升级条件
         checkLevelUp() {
             if (this.player.farm.experience >= this.experienceNeeded) {
                 this.player.farm.experience -= this.experienceNeeded;
@@ -276,15 +251,12 @@ console.log(this.player.farm)
                 ElMessage.success(`灵田等级提升，当前等级：${this.player.farm.level}`);
             }
         },
-        // 显示仓库弹窗
         showWarehouse() {
             this.warehouseVisible = true;
         },
-        // 显示市场弹窗
         showMarket() {
             this.marketVisible = true;
         },
-        // 出售药草操作
         sellHerb(herb) {
             if (this.player.farm.warehouse[herb.name] > 0) {
                 this.player.farm.warehouse[herb.name]--;
@@ -294,14 +266,12 @@ console.log(this.player.farm)
                 ElMessage.warning(`${herb.name}库存不足，无法出售`);
             }
         },
-        // 开始天气循环，每五分钟随机改变一次天气
         startWeatherCycle() {
             this.weatherInterval = setInterval(() => {
                 this.currentWeather = this.weathers[getRandomInt(0, this.weathers.length - 1)];
                 ElMessage.info(`天气变化，当前天气：${this.currentWeather}`);
             }, 300000);
         },
-        // 停止天气循环
         stopWeatherCycle() {
             if (this.weatherInterval) {
                 clearInterval(this.weatherInterval);
@@ -405,7 +375,7 @@ console.log(this.player.farm)
 
 .el-button {
     display: flex;
-    justify-content: center;  /* 水平居中 */
+    justify-content: center;
     align-items: center; 
 }
 
