@@ -5,8 +5,7 @@
                 <el-scrollbar ref="scrollbar" always>
                     <el-table :data="sortedLeaderboardData" style="width: 100%">
                         <el-table-column prop="rank" label="排名" width="80"></el-table-column>
-                        <el-table-column prop="name" label="玩家名称"></el-table-column>
-
+                        <el-table-column prop="name" label="道号"></el-table-column>
                         <el-table-column :prop="selectedCategory" :label="getCategoryLabel()">
                             <template v-slot="scope">
                                 {{ selectedCategory === 'level' ? $levelNames(scope.row[selectedCategory]) :
@@ -40,17 +39,16 @@
 </template>
 
 <script>
-// 在 <script> 标签的顶部
 import axios from 'axios';
 export default {
     data() {
         return {
             categories: [
                 { type: 'level', name: '境界' },
-                { type: 'jishaNum', name: '击杀排行' },
-                { type: 'score', name: '实力排行' },
-                { type: 'checkinDays', name: '签到排行' },
-                { type: 'highestTowerFloor', name: '无尽塔排行' }
+                { type: 'jishaNum', name: '击杀' },
+                { type: 'score', name: '实力' },
+                { type: 'checkinDays', name: '签到' },
+                { type: 'highestTowerFloor', name: '无尽塔' }
             ],
             selectedCategory: 'level',
             leaderboardData: [],
