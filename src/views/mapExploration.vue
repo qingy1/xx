@@ -77,7 +77,7 @@
                 <div class="attributes">
                     <div class="attribute-box">
                         <div class="tag attribute">
-                            境界: {{ $levelNames(npcInfo.lv) }} ({{ npcInfo.reincarnation }}转)
+                            境界: {{ $lNames(npcInfo.lv) }} ({{ npcInfo.reincarnation }}转)
                         </div>
                         <div class="tag attribute">
                             气血: 不详

@@ -10,6 +10,8 @@ import * as ElementPlusIconsVue from '@element-plus/icons-vue';
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate';
 import { useMessages } from '@/plugins/useMessages';
 const app = createApp(App);
+import axios from 'axios';
+import VueAxios from 'vue-axios';
 
 const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
@@ -133,3 +135,4 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
 app.use(router);
 app.use(ElementPlus);
 app.mount('#app');
+app.use(VueAxios, axios);

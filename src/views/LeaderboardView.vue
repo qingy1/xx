@@ -1,13 +1,17 @@
 <template>
     <div class="leaderboard">
-
-
         <div class="leaderboard-content">
             <div class="leaderboard-box">
                 <el-scrollbar ref="scrollbar" always>
                     <el-table :data="sortedLeaderboardData" style="width: 100%">
                         <el-table-column prop="rank" label="排名" width="80"></el-table-column>
                         <el-table-column prop="name" label="玩家名称"></el-table-column>
+                        <!-- 增加一个自定义的插槽，用于显示格式化过的境界 -->
+                        <el-table-column label="境界">
+                            <template #default="{ row }">
+                                {{ formatLevel(row.level) }}
+                            </template>
+                        </el-table-column>
                         <el-table-column :prop="selectedCategory" :label="getCategoryLabel()"></el-table-column>
                     </el-table>
                 </el-scrollbar>
@@ -36,6 +40,8 @@
 </template>
 
 <script>
+// 在 <script> 标签的顶部
+import axios from 'axios';
 export default {
     data() {
         return {
@@ -71,6 +77,10 @@ export default {
         this.stopObserving();
     },
     methods: {
+        // ... existing methods ...
+        formatLevel(level) {
+            return this.$levelNames(level);
+        },
         selectCategory(category) {
             this.selectedCategory = category;
         },
@@ -82,40 +92,59 @@ export default {
             return '排行榜';
         },
         async fetchLeaderboardData() {
-                 const response = await this.$http.get('/getinfo');
-                 if (response.data) {
-                   this.$notifys({
-                     title: ' 获取成功',
-                     message: '',
-                     type: 'success'
-                   });
-                   this.leaderboardData = response.data
-                   this.fetchLeaderboardData();
-                 }
+            try {
+                const response = await axios.get('/getinfo');
 
-                this.fetchLeaderboardData();
-
+                // 检查返回的数据是否为JSON对象
+                if (response.data && typeof response.data === 'object') {
+                    this.$notifys({
+                        title: '获取成功',
+                        message: '',
+                        type: 'success'
+                    });
+                    this.leaderboardData = response.data;
+                    console.log(response.data);
+                } else {
+                    // 处理非JSON数据的情形
+                    this.leaderboardData = [
+                        {
+                            name: '在上温某某',
+                            created_at: '2024-10-09T13:48:10+00:00',
+                            money: 1230000,
+                            level: 20,
+                            checkinDays: 200,
+                            highestTowerFloor: 547,
+                            jishaNum: 9999,
+                            score: 230000
+                        }
+                    ];
+                    this.$notifys({
+                        title: '数据格式错误',
+                        message: '获取的数据不是有效的JSON格式',
+                        type: 'error'
+                    });
+                }
+            } catch (error) {
+                this.$notifys({
+                    title: '获取失败',
+                    message: '无法获取数据，请稍后再试',
+                    type: 'error'
+                });
+            }
         },
         async uploadPlayerData() {
             try {
-                // 向后端API发送数据
-                // const response = await this.$http.post('/api/leaderboard/upload', {
-                //   id: this.player.id,
-                //   name: this.player.name,
-                //   level: this.player.level,
-                //   kills: this.player.jishaNum,
-                //   power: this.calculatePower(this.player),
-                //   signIn: this.player.signInDays
-                // });
-
-                // if (response.data.success) {
-                //   this.$notifys({
-                //     title: '上传成功',
-                //     message: '你的数据已成功上传到排行榜',
-                //     type: 'success'
-                //   });
-                //   this.fetchLeaderboardData();
-                // }
+                let info = {
+                    name: this.player.name,
+                    money: this.player.props.money,
+                    level: this.player.level,
+                    checkinDays: this.player.checkinDays,
+                    highestTowerFloor: this.player.highestTowerFloor,
+                    jishaNum: this.player.jishaNum,
+                    score: this.player.level
+                }
+                const response = await axios.post('/upload', JSON.stringify(info));
+                console.log(response.data)
                 console.log('数据上传成功'); // 模拟上传成功
                 this.$notifys({
                     title: '上传成功',
