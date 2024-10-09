@@ -7,12 +7,13 @@
                         <el-table-column prop="rank" label="排名" width="80"></el-table-column>
                         <el-table-column prop="name" label="玩家名称"></el-table-column>
                         <!-- 增加一个自定义的插槽，用于显示格式化过的境界 -->
-                        <el-table-column label="境界">
-                            <template #default="{ row }">
-                                {{ formatLevel(row.level) }}
+
+                        <el-table-column :prop="selectedCategory" :label="getCategoryLabel()">
+                            <template v-slot="scope">
+                                {{ selectedCategory === 'level' ? $levelNames(scope.row[selectedCategory]) :
+                                    scope.row[selectedCategory] }}
                             </template>
                         </el-table-column>
-                        <el-table-column :prop="selectedCategory" :label="getCategoryLabel()"></el-table-column>
                     </el-table>
                 </el-scrollbar>
             </div>
@@ -46,7 +47,7 @@ export default {
     data() {
         return {
             categories: [
-                { type: 'level', name: '境界排行' },
+                { type: 'level', name: '境界' },
                 { type: 'jishaNum', name: '击杀排行' },
                 { type: 'score', name: '实力排行' },
                 { type: 'checkinDays', name: '签到排行' },
@@ -115,7 +116,12 @@ export default {
                             checkinDays: 200,
                             highestTowerFloor: 547,
                             jishaNum: 9999,
-                            score: 230000
+                            score: 230000,
+                            health: 10,
+                            attack: 1,
+                            defense: 0.5,
+                            dodge: 0.5,
+                            critical: 0.5
                         }
                     ];
                     this.$notifys({
@@ -141,9 +147,14 @@ export default {
                     checkinDays: this.player.checkinDays,
                     highestTowerFloor: this.player.highestTowerFloor,
                     jishaNum: this.player.jishaNum,
-                    score: this.player.level
+                    score: this.player.score,
+                    health: this.player.health,
+                    attack: this.player.attack,
+                    defense: this.player.defense,
+                    dodge: this.player.dodge,
+                    critical: this.player.critical
                 }]
-                const response = await axios.post('/upload', info,{headers: {'Content-Type': 'application/json'}});
+                const response = await axios.post('/upload', info, { headers: { 'Content-Type': 'application/json' } });
                 console.log('数据上传成功'); // 模拟上传成功
                 this.$notifys({
                     title: '上传成功',
