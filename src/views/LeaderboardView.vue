@@ -134,7 +134,7 @@ export default {
         },
         async uploadPlayerData() {
             try {
-                let info = {
+                let info = [{
                     name: this.player.name,
                     money: this.player.props.money,
                     level: this.player.level,
@@ -142,9 +142,8 @@ export default {
                     highestTowerFloor: this.player.highestTowerFloor,
                     jishaNum: this.player.jishaNum,
                     score: this.player.level
-                }
-                const response = await axios.post('/upload', JSON.stringify(info));
-                console.log(response.data)
+                }]
+                const response = await axios.post('/upload', info,{headers: {'Content-Type': 'application/json'}});
                 console.log('数据上传成功'); // 模拟上传成功
                 this.$notifys({
                     title: '上传成功',
