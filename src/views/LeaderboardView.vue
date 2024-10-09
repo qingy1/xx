@@ -41,10 +41,10 @@ export default {
         return {
             categories: [
                 { type: 'level', name: '境界排行' },
-                { type: 'kills', name: '击杀排行' },
-                { type: 'power', name: '实力排行' },
-                { type: 'signIn', name: '签到排行' },
-                { type: 'ta', name: '无尽塔排行' }
+                { type: 'jishaNum', name: '击杀排行' },
+                { type: 'score', name: '实力排行' },
+                { type: 'checkinDays', name: '签到排行' },
+                { type: 'highestTowerFloor', name: '无尽塔排行' }
             ],
             selectedCategory: 'level',
             leaderboardData: [],
@@ -82,13 +82,19 @@ export default {
             return '排行榜';
         },
         async fetchLeaderboardData() {
-            // 从后端API获取数据
-            // 示例数据
-            this.leaderboardData = [
-                { id: 1, name: '温某某', level: this.$levelNames(100), kills: 1000, power: 1000, signIn: 300,ta: 2000 },
-                { id: 2, name: '水笔', level: this.$levelNames(15), kills: 150, power: 1500, signIn: 25, ta:100},
-                // ... 更多玩家数据
-            ];
+                 const response = await this.$http.get('/getinfo');
+                 if (response.data) {
+                   this.$notifys({
+                     title: ' 获取成功',
+                     message: '',
+                     type: 'success'
+                   });
+                   this.leaderboardData = response.data
+                   this.fetchLeaderboardData();
+                 }
+
+                this.fetchLeaderboardData();
+
         },
         async uploadPlayerData() {
             try {

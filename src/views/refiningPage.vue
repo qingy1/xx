@@ -411,7 +411,6 @@ collectRefinedEquipment() {
         enhancedEquipment.critical,
         enhancedEquipment.defense
       );
-console.log(enhancedEquipment)
       return enhancedEquipment;
     },
     gainRefiningExp() {
