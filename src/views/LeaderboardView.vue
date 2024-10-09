@@ -6,7 +6,6 @@
                     <el-table :data="sortedLeaderboardData" style="width: 100%">
                         <el-table-column prop="rank" label="排名" width="80"></el-table-column>
                         <el-table-column prop="name" label="玩家名称"></el-table-column>
-                        <!-- 增加一个自定义的插槽，用于显示格式化过的境界 -->
 
                         <el-table-column :prop="selectedCategory" :label="getCategoryLabel()">
                             <template v-slot="scope">
