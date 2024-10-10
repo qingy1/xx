@@ -60,7 +60,7 @@
             <div class="equipment-list-container">
               <div class="equipment-list">
                 <tag v-for="(equipment, index) in player.inventory" :key="index" :type="equipment.quality"
-                  @click="selectEquipmentForRefine(equipment)" :class="{'selected': isSelectedForRefine(equipment)}"
+                  @click="selectEquipmentForRefine(equipment)" :class="{ 'selected': isSelectedForRefine(equipment) }"
                   class="equipment-item">
                   {{ equipment.name }}
                 </tag>
@@ -96,7 +96,7 @@
                 </tag>
               </div>
               <p>需要陨铁: {{ requiredMeteoriteIron }}</p>
-              <el-button type="primary" @click="startTargetedRefine" :disabled="!canStartTargetedRefine">
+              <el-button type="primary" @click="startTargetedRefine">
                 开始定向精炼
               </el-button>
               <el-button v-if="refinedEquipments.length > 0" type="success" @click="collectRefinedEquipment">
@@ -171,7 +171,7 @@ export default {
       refiningProgress: 0,
       remainingTime: 0,
       refinedEquipments: [],
-      player: this. $store.player,
+      player: this.$store.player,
       equipmentDetailsVisible: false,
       selectedEquipmentDetails: null,
       selectedForRefine: [],
@@ -188,8 +188,8 @@ export default {
     canRefine() {
       return this.selectedEquipments.length > 0;
     },
-    materials(){
-      return this. $store.player.materials;
+    materials() {
+      return this.$store.player.materials;
     },
     refiningLevel() {
       return Math.floor(Math.sqrt(this.player.refiningExp / 1000)) + 1;
@@ -208,8 +208,8 @@ export default {
       return ((this.player.miningExp - currentLevelExp) / (nextLevelExp - currentLevelExp)) * 100;
     },
     canStartTargetedRefine() {
-      return this.selectedForTargetedRefine && 
-             this.player.materials.find(m => m.name === '陨铁')?.count >= this.requiredMeteoriteIron;
+      return this.selectedForTargetedRefine &&
+        this.player.materials.find(m => m.name === '陨铁')?.count >= this.requiredMeteoriteIron;
     },
   },
   methods: {
@@ -235,7 +235,7 @@ export default {
       this.requiredMeteoriteIron = 50;
     },
     isSelectedForRefine(equipment) {
-      return this.refineMode === 'random' 
+      return this.refineMode === 'random'
         ? this.selectedForRefine.includes(equipment)
         : this.selectedForTargetedRefine === equipment;
     },
@@ -249,13 +249,13 @@ export default {
       if (this.selectedForRefine.length !== 5) return;
       const baseQuality = this.selectedForRefine[0].quality;
       if (!this.selectedForRefine.every(e => e.quality === baseQuality)) {
-        this. $notifys({ title: '精炼失败', message: '请选择相同品质的装备' });
+        this.$notifys({ title: '精炼失败', message: '请选择相同品质的装备' });
         return;
       }
       const qualityOrder = ['info', 'success', 'primary', 'purple', 'warning', 'danger', 'pink'];
       const currentQualityIndex = qualityOrder.indexOf(baseQuality);
       if (currentQualityIndex === qualityOrder.length - 1) {
-        this. $notifys({ title: '精炼失败', message: '已达到最高品质，无法继续精炼' });
+        this.$notifys({ title: '精炼失败', message: '已达到最高品质，无法继续精炼' });
         return;
       }
       const newQuality = qualityOrder[currentQualityIndex + 1];
@@ -267,57 +267,56 @@ export default {
         }
       });
       this.player.inventory.push(newEquipment);
-      this. $notifys({ title: '精炼成功', message: `成功精炼出${this.$levels[newQuality]}品质的${newEquipment.name}` });
+      this.$notifys({ title: '精炼成功', message: `成功精炼出${this.$levels[newQuality]}品质的${newEquipment.name}` });
       this.selectedForRefine = [];
     },
     startTargetedRefine() {
-  if (!this.canStartTargetedRefine) return;
-  
-  const meteoriteIron = this.player.materials.find(m => m.name === '陨铁');
-  meteoriteIron.count -= this.requiredMeteoriteIron;
-  
-  const equipment = this.selectedForTargetedRefine;
-  const successRate = Math.min(0.9, 0.5 + this.refiningLevel * 0.02);
-  
-  if (Math.random() < successRate) {
-    const enhancedEquipment = this.enhanceEquipment(equipment);
-    enhancedEquipment.refineTimes = (enhancedEquipment.refineTimes || 0) + 1;
-    this.refinedEquipments = [enhancedEquipment]; // 将精炼后的装备放入refinedEquipments数组
-    this.$notifys({ 
-      title: '精炼成功', 
-      message: `${enhancedEquipment.name} 属性提升！点击"收入背包"按钮以保存，或继续精炼。` 
-    });
-  } else {
-    this.$notifys({ title: '精炼失败', message: `${equipment.name} 精炼失败，但未被损坏。` });
-  }
-  
-  this.gainRefiningExp();
-
-  this.calculateRequiredMeteoriteIron();
-},
-
-collectRefinedEquipment() {
-  if (this.refinedEquipments.length === 0) return;
-  
-  const refinedEquipment = this.refinedEquipments[0];
-  const oldEquipmentIndex = this.player.inventory.findIndex(e => e === this.selectedForTargetedRefine);
-  
-  if (oldEquipmentIndex !== -1) {
-    this.player.inventory.splice(oldEquipmentIndex, 1, refinedEquipment);
-    this.$notifys({ title: '装备更新', message: `${refinedEquipment.name} 已更新并放入背包` });
-  } else {
-    if (this.player.inventory.length < this.player.backpackCapacity) {
-      this.player.inventory.push(refinedEquipment);
-      this.$notifys({ title: '新装备入库', message: `${refinedEquipment.name} 已放入背包` });
-    } else {
-      this.$notifys({ title: '背包已满', message: '无法收入新的装备' });
-      return;
-    }
-  }
-  
-  this.refinedEquipments = [];
-  this.selectedForTargetedRefine = null;
-},
+        if (!this.canStartTargetedRefine) return;
+        const meteoriteIron = this.player.materials.find(m => m.name === '陨铁');
+        const equipment = this.selectedForTargetedRefine;
+       if (equipment.refineTimes >= 15) {
+            this.$notifys({ title: '精炼限制', message: `${equipment.name} 达到最大精炼等级，无法继续精炼。` });
+            return;
+        }
+        const needm = 50+ (equipment.refineTimes || 0) *10;
+        meteoriteIron.count += needm;
+        const successRate = Math.min(0.9, 0.5 + this.refiningLevel * 0.02);
+        if (Math.random() < successRate) {
+            const enhancedEquipment = this.enhanceEquipment(equipment);
+            enhancedEquipment.refineTimes = (enhancedEquipment.refineTimes || 0) + 1;
+            const originalIndex = this.player.inventory.findIndex(e => e === equipment);
+            if (originalIndex !== -1) {
+                this.player.inventory.splice(originalIndex, 1);  
+            }
+            this.refinedEquipments = [enhancedEquipment];
+            this.selectedForTargetedRefine = enhancedEquipment
+            this.$notifys({ 
+                title: '精炼成功', 
+                message: `${enhancedEquipment.name} 属性提升！点击"收入背包"按钮以保存，或继续精炼。`
+            });
+        } else {
+            this.$notifys({ title: '精炼失败', message: `${equipment.name} 精炼失败，但未被损坏。` });
+        }
+        
+        this.gainRefiningExp();
+        this.calculateRequiredMeteoriteIron();
+    },
+    collectRefinedEquipment() {
+        if (this.refinedEquipments.length === 0) return;
+        
+        const refinedEquipment = this.refinedEquipments[0];
+        // 在点击“收入背包”时，将精炼的装备添加回去
+        if (this.player.inventory.length < this.player.backpackCapacity) {
+            this.player.inventory.push(refinedEquipment);
+            this.$notifys({ title: '新装备入库', message: `${refinedEquipment.name} 已放入背包` });
+        } else {
+            this.$notifys({ title: '背包已满', message: '无法收入新的装备' });
+        }
+        
+        // 清空已精炼的装备
+        this.refinedEquipments = [];
+        this.selectedForTargetedRefine = null;
+    },
     selectMaterial(material) {
       if (material.count >= 50) {
         const newEquipment = this.generateRandomEquipment(material);
@@ -325,11 +324,11 @@ collectRefinedEquipment() {
         material.count -= 50;
       }
     },
-    generateRandomEquipment(material,quality) {
+    generateRandomEquipment(material, quality) {
       const equipmentType = ['weapon', 'armor', 'accessory', 'sutra'][Math.floor(Math.random() * 4)];
       const equipmentLevel = this.player.level;
       let equipment;
-      switch(equipmentType) {
+      switch (equipmentType) {
         case 'weapon':
           equipment = equip.equip_Weapons(equipmentLevel, false);
           break;
@@ -339,12 +338,12 @@ collectRefinedEquipment() {
         case 'accessory':
           equipment = equip.equip_Accessorys(equipmentLevel, false);
           break;
-          case 'sutra':
+        case 'sutra':
           equipment = equip.equip_Sutras(equipmentLevel, false);
           break;
       }
       const random = Math.random() * 100;
-      switch(material.name) {
+      switch (material.name) {
         case '陨铁':
           equipment.quality = random < 1.1 ? 'pink' : 'danger';
           break;
@@ -379,7 +378,7 @@ collectRefinedEquipment() {
       if (!this.canRefine) return;
       this.isRefining = true;
       this.remainingTime = 60 * this.selectedEquipments.length;
-      this.refiningProgress = 0;       
+      this.refiningProgress = 0;
       const refiningInterval = setInterval(() => {
         this.remainingTime--;
         this.refiningProgress = Math.floor((60 * this.selectedEquipments.length - this.remainingTime) / (60 * this.selectedEquipments.length) * 100);
@@ -397,8 +396,8 @@ collectRefinedEquipment() {
     },
     enhanceEquipment(equipment) {
       const enhancedEquipment = { ...equipment };
-      const enhanceRate = 0.05 + (this.refiningLevel * 0.05);
-      
+      const enhanceRate = 0.05 + (this.refiningLevel * 0.02);
+      enhancedEquipment.refineTimes = (equipment.refineTimes || 0);
       enhancedEquipment.attack = Math.floor(enhancedEquipment.attack * (1 + enhanceRate));
       enhancedEquipment.defense = Math.floor(enhancedEquipment.defense * (1 + enhanceRate));
       enhancedEquipment.health = Math.floor(enhancedEquipment.health * (1 + enhanceRate));
@@ -430,7 +429,7 @@ collectRefinedEquipment() {
       this.player.refiningExp += totalExp;
       const oldLevel = this.refiningLevel;
       const newLevel = Math.floor(Math.sqrt(this.player.refiningExp / 1000)) + 1;
-      
+
       if (newLevel > oldLevel) {
         this.$notifys({ title: '炼器等级提升', message: `炼器等级提升到${newLevel}级！` });
       }
@@ -454,7 +453,7 @@ collectRefinedEquipment() {
         this.$notifys({ title: '背包已满', message: '无法收入新的装备' });
         return;
       }
-      
+
       this.player.inventory.push(this.selectedEquipmentDetails);
       this.refinedEquipments = this.refinedEquipments.filter(e => e !== this.selectedEquipmentDetails);
       this.$notifys({ title: '炼器成功', message: `${this.selectedEquipmentDetails.name} 已加入背包` });
@@ -468,7 +467,7 @@ collectRefinedEquipment() {
       if (equipmentsToCollect.length > 0) {
         this.$notifys({ title: '炼器成功', message: `${equipmentsToCollect.length}件装备已加入背包` });
       }
-      
+
       if (this.refinedEquipments.length > 0) {
         this.$notifys({ title: '背包已满', message: `还有${this.refinedEquipments.length}件装备未能收入背包` });
       }
@@ -484,11 +483,11 @@ collectRefinedEquipment() {
       this.isMining = true;
       this.miningTime = 0;
       this.miningProgress = 0;
-      
+
       this.miningInterval = setInterval(() => {
         this.miningTime++;
         this.miningProgress = (this.miningTime % 60) / 60 * 100;
-        
+
         if (this.miningTime % 60 === 0) {
           this.completeMining();
         }
@@ -503,7 +502,7 @@ collectRefinedEquipment() {
       const miningResults = this.calculateMiningResults();
       this.updateOreCount(miningResults);
       this.gainMiningExp(miningResults);
-      
+
       let resultMessage = "挖矿完成，获得：";
       for (const [oreName, count] of Object.entries(miningResults)) {
         if (count > 0) {
@@ -515,7 +514,7 @@ collectRefinedEquipment() {
     calculateMiningResults() {
       const results = { 精铁: 0, 玄铁: 0, 寒铁: 0, 陨铁: 0 };
       const totalOres = 10 + Math.floor(this.miningLevel / 2); // 每次挖矿基础获得10个，每2级增加1个
-      
+
       for (let i = 0; i < totalOres; i++) {
         const random = Math.random() * 100;
         if (random < 1 * this.miningLevel) {
@@ -528,7 +527,7 @@ collectRefinedEquipment() {
           results.精铁++;
         }
       }
-      
+
       return results;
     },
     updateOreCount(results) {
@@ -539,10 +538,10 @@ collectRefinedEquipment() {
     gainMiningExp(results) {
       const expGained = this.miningLevel * 10;
       this.player.miningExp += expGained;
-      
+
       const oldLevel = this.miningLevel;
       const newLevel = Math.floor(Math.sqrt(this.player.miningExp / 1000)) + 1;
-      
+
       if (newLevel > oldLevel) {
         this.$notifys({ title: '挖矿等级提升', message: `挖矿等级提升到${newLevel}级！` });
       }
@@ -580,7 +579,8 @@ collectRefinedEquipment() {
   margin-bottom: 20px;
 }
 
-.materials-section, .refining-main {
+.materials-section,
+.refining-main {
   width: 48%;
   margin-bottom: 20px;
 }
@@ -589,7 +589,8 @@ collectRefinedEquipment() {
   width: 100%;
 }
 
-.material-list, .equipment-info {
+.material-list,
+.equipment-info {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -636,7 +637,8 @@ collectRefinedEquipment() {
   align-items: center;
 }
 
-.refining-device, .mining-device {
+.refining-device,
+.mining-device {
   width: 150px;
   height: 150px;
   border: 2px solid #dcdfe6;
@@ -649,7 +651,8 @@ collectRefinedEquipment() {
   position: relative;
 }
 
-.refining-device > *, .mining-device > * {
+.refining-device>*,
+.mining-device>* {
   position: absolute;
   top: 50%;
   left: 50%;
@@ -664,9 +667,11 @@ collectRefinedEquipment() {
   0% {
     box-shadow: 0 0 0 0 rgba(64, 158, 255, 0.4);
   }
+
   70% {
     box-shadow: 0 0 0 10px rgba(64, 158, 255, 0);
   }
+
   100% {
     box-shadow: 0 0 0 0 rgba(64, 158, 255, 0);
   }
@@ -678,7 +683,8 @@ collectRefinedEquipment() {
   justify-content: space-between;
 }
 
-.inventory-section, .refine-main {
+.inventory-section,
+.refine-main {
   width: 100%;
   margin-bottom: 20px;
 }
@@ -734,7 +740,9 @@ collectRefinedEquipment() {
 }
 
 @media (max-width: 768px) {
-  .materials-section, .refining-main {
+
+  .materials-section,
+  .refining-main {
     width: 100%;
   }
 
@@ -742,7 +750,8 @@ collectRefinedEquipment() {
     width: 100%;
   }
 
-  .refining-device, .mining-device {
+  .refining-device,
+  .mining-device {
     width: 120px;
     height: 120px;
   }

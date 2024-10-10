@@ -1,8 +1,8 @@
 {
     "name": "xiuxian-game",
     "private": true,
-    "version": "0.9.7",
-    "versionlog": "新增排行榜",
+    "version": "0.9.8",
+    "versionlog": "精炼增加限制,修改排行",
     "type": "module",
     "scripts": {
         "dev": "vite --open",

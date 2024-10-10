@@ -1166,21 +1166,21 @@ export default {
                         lock: true,
                         level: 20, // 装备等级
                         score: 99999, // 装备评分
-                        dodge: 0.1,// 闪避率
-                        attack: 20000,// 攻击力
+                        dodge: 0,// 闪避率
+                        attack: 1000000,// 攻击力
                         health: 0,// 血量
-                        defense: 20000,// 防御
-                        critical: 0.5,// 暴击率
+                        defense: 0,// 防御
+                        critical: 0,// 暴击率
                         // 初始数据
                         initial: {
-                            dodge: 0.1,// 闪避率
-                            attack: 20000,// 攻击力
+                            dodge: 0,// 闪避率
+                            attack: 0,// 攻击力
                             health: 0,// 血量
-                            defense: 20000,// 防御
-                            critical: 0.5,// 暴击率
+                            defense: 0,// 防御
+                            critical: 1,// 暴击率
                         },
                         quality: "pink",
-                        strengthen: 10 // 炼器等级
+                        strengthen: 0 // 炼器等级
                     };
                     if (choice.reward.equipment.match(/仙剑/)) this.$store.player.inventory.push(xj);
                 }

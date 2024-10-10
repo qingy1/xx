@@ -48,7 +48,8 @@ const equips = {
                         critical // 暴击率
                     },
                     quality,
-                    strengthen: 0 // 炼器等级
+                    strengthen: 0, // 炼器等级
+                   // refineTimes:0
                 };
                 return baseEquip;
             }
