@@ -8,7 +8,7 @@ RUN npm config set registry https://registry.npmmirror.com
 
 RUN cd /workspace
 
-RUN git clone https://mirror.ghproxy.com/https://github.com/wenmoux/xx.git
+RUN git clone https://github.com/wenmoux/xx.git
 
 RUN mv ./xx/* . ; rm -rf ./xx/
 
