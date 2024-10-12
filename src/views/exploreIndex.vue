@@ -19,14 +19,14 @@ export default {
             dungeons: [
                 {
                     id: 1,
-                    name: "紫玄秘境",
+                    name: "锁妖塔",
                     recommendedLevel: 20,
-                    description: "传说中只有有缘人才能进入",
-                    rewards: "紫玄仙剑"
+                    description: "传说中，能成功通过锁妖塔考验的人，将获得前人无法想象的力量。",
+                    rewards: "魔珠之力"
                 },
                 {
                     id: 2,
-                    name: "太古仙境探秘",
+                    name: "太古仙境",
                     recommendedLevel: 1,
                     description: "太古仙境探秘",
                     rewards: "灵石"

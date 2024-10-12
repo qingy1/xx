@@ -19,6 +19,9 @@
         <el-scrollbar class="log-content" height="150px" ref="scrollbar" always>
             <p v-for="(log, index) in logs" :key="index" class="log-text" v-html="log" />
         </el-scrollbar>
+        
+            <el-button type="danger" @click="$router.push('/combined-exploration')">退出秘境</el-button>
+       
     </div>
 </template>
 
@@ -29,806 +32,632 @@ export default {
             dungeonsData: {
                 1:
                 {
-                    "name": "紫玄秘境",
-                    "parts": [
-                        {
-                            "text": "一天，你收到一份神秘的邀请函，传说中只有有缘人才能进入的紫玄秘境在今晚子时开启。秘境中有着无数珍稀的灵草、绝世的法宝，以及传说中的紫玄真仙的遗留传承。你决定踏上这次冒险之旅，提升修为，寻求突破的契机。",
-                            "choices": [
-                                {
-                                    "text": "立即动身前往紫玄秘境入口",
-                                    "result": "你带上行囊，朝着秘境入口赶去。",
-                                    "nextPartIndex": 1
-                                },
-                                {
-                                    "text": "准备充分的修炼资源再出发",
-                                    "result": "你花费时间准备，但秘境的开启时间不等人。",
-                                    "nextPartIndex": 2
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你顺利抵达紫玄秘境的入口，此时已聚集了不少修仙者。伴随着一道紫色光芒，入口缓缓打开。你深吸一口气，迈入其中。刚进入秘境，你便感受到浓郁的灵气与隐隐的威压。",
-                            "choices": [
-                                {
-                                    "text": "跟随大部队前进",
-                                    "result": "你选择与其他修仙者同行。",
-                                    "nextPartIndex": 3
-                                },
-                                {
-                                    "text": "独自一人探索",
-                                    "result": "你决定避开人群，独自行动。",
-                                    "nextPartIndex": 4
-                                }
-                            ]
-                        },
-                        {
-                            "text": "由于你的犹豫与拖延，秘境入口已经关闭。你错过了这次机会，只能等待下一次开启。",
-                            "choices": [
-                                {
-                                    "text": "返回宗门继续修炼",
-                                    "result": "你回到宗门，努力修炼，期盼下次机会。",
-                                    "nextPartIndex": null
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你与其他修仙者一路前行，忽然前方出现了一片灵草园，园中生长着各种珍稀的灵草。可就在此时，灵草园中出现了一只守护妖兽，凶猛异常。",
-                            "choices": [
-                                {
-                                    "text": "与大家一起对抗妖兽",
-                                    "result": "你们合力击败了妖兽，成功采摘灵草。",
-                                    "reward": {
-                                        "item": ["珍稀灵草 x3"],
-                                        "cultivation": 50
-                                    },
-                                    "nextPartIndex": 5
-                                },
-                                {
-                                    "text": "趁乱偷取灵草",
-                                    "result": "你被其他修仙者发现，引起了公愤。",
-                                    "healthChange": -20,
-                                    "nextPartIndex": 6
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你独自一人漫步在秘境中，四周静谧而神秘。突然，你发现了一条分岔路：一条通向幽暗的森林，另一条通向明亮的山谷。",
-                            "choices": [
-                                {
-                                    "text": "进入幽暗的森林",
-                                    "result": "你走进森林，感到阴森恐怖。",
-                                    "nextPartIndex": 7
-                                },
-                                {
-                                    "text": "前往明亮的山谷",
-                                    "result": "你来到山谷，发现了一条清澈的小溪。",
-                                    "nextPartIndex": 8
-                                }
-                            ]
-                        },
-                        {
-                            "text": "经过这次教训，你明白了修行道路上不能急功近利。你决定潜心修炼，提高自己的修为。",
-                            "choices": [
-                                {
-                                    "text": "闭关修炼",
-                                    "result": "你闭关多年，修为大进。",
-                                    "reward": {
-                                        "cultivation": 100
-                                    },
-                                    "nextPartIndex": null
-                                }
-                            ]
-                        },
-                        {
-                            "text": "由于你的行为，其他修仙者对你充满敌意。一场战斗在所难免。",
-                            "choices": [
-                                {
-                                    "text": "道歉并归还灵草",
-                                    "result": "你的诚意打动了他们，危机解除。",
-                                    "nextPartIndex": 5
-                                },
-                                {
-                                    "text": "强硬对抗",
-                                    "result": "你寡不敌众，被重伤。",
-                                    "healthChange": -50,
-                                    "nextPartIndex": 9
-                                }
-                            ]
-                        },
-                        {
-                            "text": "在幽暗的森林中，你遇到了一只形态奇特的妖兽。它全身散发着黑气，眼中闪烁着红光。",
-                            "choices": [
-                                {
-                                    "text": "试图与妖兽沟通",
-                                    "result": "妖兽竟然能够口吐人言，与你交谈。",
-                                    "nextPartIndex": 10
-                                },
-                                {
-                                    "text": "拔剑攻击",
-                                    "result": "妖兽被激怒，展开了猛烈的攻击。",
-                                    "nextPartIndex": 11
-                                }
-                            ]
-                        },
-                        {
-                            "text": "在山谷中，你发现了一块光滑的石头，上面刻着古老的符文。",
-                            "choices": [
-                                {
-                                    "text": "尝试解读符文",
-                                    "result": "你领悟了高级法术——火焰诀。",
-                                    "reward": {
-                                        "cultivation": 80,
-                                        "item": ["火焰诀秘籍"]
-                                    },
-                                    "nextPartIndex": 12
-                                },
-                                {
-                                    "text": "将石头带走",
-                                    "result": "石头突然爆裂，你受到了冲击。",
-                                    "healthChange": -10,
-                                    "nextPartIndex": 13
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你身受重伤，无法继续冒险。你被迫退出秘境，回去疗伤。",
-                            "choices": [
-                                {
-                                    "text": "退出秘境",
-                                    "result": "你退出了秘境，错过了更多机缘。",
-                                    "nextPartIndex": null
-                                }
-                            ]
-                        },
-                        {
-                            "text": "妖兽告诉你，它被困在此地多年，希望你能帮助它解除封印。作为回报，它会赐予你一份珍贵的礼物。",
-                            "choices": [
-                                {
-                                    "text": "答应帮助妖兽",
-                                    "result": "你成功解除了封印，妖兽兑现了承诺。",
-                                    "reward": {
-                                        "item": ["妖兽内丹"],
-                                        "equipment": "妖兽之戒",
-                                        "cultivation": 100
-                                    },
-                                    "nextPartIndex": 14
-                                },
-                                {
-                                    "text": "拒绝帮助，趁机离开",
-                                    "result": "妖兽对你心生不满，但并未为难你。",
-                                    "nextPartIndex": 15
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你与妖兽展开激烈的战斗，最终凭借实力击败了它。",
-                            "choices": [
-                                {
-                                    "text": "获取妖兽的内丹",
-                                    "result": "你获得了妖兽内丹。",
-                                    "reward": {
-                                        "item": ["妖兽内丹"],
-                                        "cultivation": 50
-                                    },
-                                    "nextPartIndex": 16
-                                },
-                                {
-                                    "text": "放过妖兽，继续前行",
-                                    "result": "你展现了慈悲之心，妖兽感激地离开。",
-                                    "nextPartIndex": 17
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你领悟了火焰诀，感到体内的灵力更加充盈。你决定继续探索。",
-                            "choices": [
-                                {
-                                    "text": "前往秘境深处",
-                                    "result": "你向着秘境深处迈进。",
-                                    "nextPartIndex": 18
-                                },
-                                {
-                                    "text": "返回入口",
-                                    "result": "你决定见好就收，离开秘境。",
-                                    "nextPartIndex": null
-                                }
-                            ]
-                        },
-                        {
-                            "text": "石头的爆炸使你受伤。你决定离开山谷，寻找疗伤之物。",
-                            "choices": [
-                                {
-                                    "text": "在附近寻找草药",
-                                    "result": "你找到了一些草药，缓解了伤势。",
-                                    "item": ["疗伤草药"],
-                                    "nextPartIndex": 19
-                                },
-                                {
-                                    "text": "继续前进，不理会伤势",
-                                    "result": "伤势加重，行动困难。",
-                                    "healthChange": -20,
-                                    "nextPartIndex": 20
-                                }
-                            ]
-                        },
-                        {
-                            "text": "妖兽内丹蕴含着巨大的能量，你的修为得到了提升。",
-                            "choices": [
-                                {
-                                    "text": "继续探索秘境",
-                                    "result": "你感觉自己实力大增，信心倍增。",
-                                    "nextPartIndex": 21
-                                },
-                                {
-                                    "text": "退出秘境",
-                                    "result": "你满足于此次收获，决定离开。",
-                                    "nextPartIndex": null
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你离开了森林，来到了一片湖泊边。湖水清澈见底，湖中心漂浮着一朵奇异的莲花。",
-                            "choices": [
-                                {
-                                    "text": "尝试摘取莲花",
-                                    "result": "湖中突然升起一道水龙，阻止了你。",
-                                    "nextPartIndex": 22
-                                },
-                                {
-                                    "text": "绕过湖泊，继续前行",
-                                    "result": "你放弃了莲花，选择继续探险。",
-                                    "nextPartIndex": 23
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你发现前方有一座巨大的祭坛，上面悬浮着一把闪耀着紫色光芒的仙剑。",
-                            "choices": [
-                                {
-                                    "text": "上前取剑",
-                                    "result": "祭坛触发了机关，你被困在了阵法中。",
-                                    "nextPartIndex": 24
-                                },
-                                {
-                                    "text": "观察祭坛周围",
-                                    "result": "你发现了破解阵法的关键。",
-                                    "nextPartIndex": 25
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你采集了草药，伤势得到缓解。",
-                            "choices": [
-                                {
-                                    "text": "继续探索",
-                                    "result": "你恢复了行动力，决定继续前进。",
-                                    "nextPartIndex": 26
-                                },
-                                {
-                                    "text": "返回入口",
-                                    "result": "你决定保险起见，退出秘境。",
-                                    "nextPartIndex": null
-                                }
-                            ]
-                        },
-                        {
-                            "text": "伤势加重使你难以行动。突然，你遇到了一位神秘的老人。",
-                            "choices": [
-                                {
-                                    "text": "请求帮助",
-                                    "result": "老人治愈了你的伤势，并给予了指点。",
-                                    "reward": {
-                                        "cultivation": 100,
-                                        "item": ["九转还魂丹"]
-                                    },
-                                    "nextPartIndex": 27
-                                },
-                                {
-                                    "text": "避开老人",
-                                    "result": "你错过了机缘，最终因伤势恶化退出秘境。",
-                                    "nextPartIndex": null
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你感到周围的灵气越来越浓郁，前方似乎有一座宫殿的轮廓。",
-                            "choices": [
-                                {
-                                    "text": "前往宫殿",
-                                    "result": "你朝着宫殿走去，心中充满期待。",
-                                    "nextPartIndex": 28
-                                },
-                                {
-                                    "text": "警惕地观察四周",
-                                    "result": "你保持警惕，避免了隐藏的陷阱。",
-                                    "nextPartIndex": 29
-                                }
-                            ]
-                        },
-                        {
-                            "text": "水龙告诉你，莲花是湖泊的命脉，不能被摘取。",
-                            "choices": [
-                                {
-                                    "text": "表示理解，离开湖边",
-                                    "result": "水龙对你的善意表示感谢，赠与你一滴水灵。",
-                                    "reward": {
-                                        "item": ["水灵珠"]
-                                    },
-                                    "nextPartIndex": 23
-                                },
-                                {
-                                    "text": "执意摘取莲花",
-                                    "result": "水龙大怒，与你战斗。",
-                                    "nextPartIndex": 30
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你绕过湖泊，继续前行。前方出现了一只巨大的石头巨人，挡住了去路。",
-                            "choices": [
-                                {
-                                    "text": "挑战巨人",
-                                    "result": "一场激战之后，你击败了石头巨人。",
-                                    "reward": {
-                                        "equipment": "巨人之斧",
-                                        "cultivation": 80
-                                    },
-                                    "nextPartIndex": 31
-                                },
-                                {
-                                    "text": "寻找其他路径",
-                                    "result": "你发现了一条隐秘的小路。",
-                                    "nextPartIndex": 32
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你被困在阵法中，无法脱身。",
-                            "choices": [
-                                {
-                                    "text": "尝试破解阵法",
-                                    "result": "你集中精神，寻找破绽。",
-                                    "nextPartIndex": 33
-                                },
-                                {
-                                    "text": "呼救求援",
-                                    "result": "无人回应，你只能自救。",
-                                    "nextPartIndex": 34
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你发现了阵法的核心，成功关闭了陷阱，取下了仙剑。",
-                            "choices": [
-                                {
-                                    "text": "挥剑试招",
-                                    "result": "仙剑与心神相合，你的实力大增。",
-                                    "reward": {
-                                        "equipment": "紫玄仙剑",
-                                        "cultivation": 150
-                                    },
-                                    "nextPartIndex": 35
-                                },
-                                {
-                                    "text": "保存仙剑，继续探索",
-                                    "result": "你小心翼翼地收好了仙剑。",
-                                    "reward": {
-                                        "equipment": "紫玄仙剑"
-                                    },
-                                    "nextPartIndex": 36
-                                }
-                            ]
-                        },
-                        {
-                            "text": "老人告诉你，他是紫玄秘境的守护者。由于你的善良和坚持，他愿意传授你一门绝学。",
-                            "choices": [
-                                {
-                                    "text": "拜师学艺",
-                                    "result": "你跟随老人学习，修为大增。",
-                                    "reward": {
-                                        "cultivation": 200,
-                                        "item": ["绝学——九转玄功"]
-                                    },
-                                    "nextPartIndex": null
-                                },
-                                {
-                                    "text": "婉拒好意，继续前行",
-                                    "result": "老人微微一笑，消失在原地。",
-                                    "nextPartIndex": 26
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你谨慎地前往宫殿，发现宫殿内有许多珍宝。",
-                            "choices": [
-                                {
-                                    "text": "搜索珍宝",
-                                    "result": "你获得了大量的修炼资源。",
-                                    "reward": {
-                                        "money": 1000,
-                                        "item": ["高级丹药 x5", "灵石 x100"]
-                                    },
-                                    "nextPartIndex": 37
-                                },
-                                {
-                                    "text": "探索宫殿深处",
-                                    "result": "你发现了隐藏的密室。",
-                                    "nextPartIndex": 38
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你发现周围有多个隐藏的法阵。避开陷阱后，你发现了一本古老的秘籍。",
-                            "choices": [
-                                {
-                                    "text": "阅读秘籍",
-                                    "result": "你学会了高级心法——紫玄诀。",
-                                    "reward": {
-                                        "item": ["紫玄诀秘籍"],
-                                        "cultivation": 150
-                                    },
-                                    "nextPartIndex": 39
-                                },
-                                {
-                                    "text": "将秘籍收起",
-                                    "result": "你决定以后再研究。",
-                                    "item": ["古老的秘籍"],
-                                    "nextPartIndex": 40
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你感受到仙剑的强大力量，决定继续探索更深处。",
-                            "choices": [
-                                {
-                                    "text": "前往秘境核心区域",
-                                    "result": "那里或许有着更大的秘密。",
-                                    "nextPartIndex": 44
-                                },
-                                {
-                                    "text": "返回入口",
-                                    "result": "你决定离开秘境。",
-                                    "nextPartIndex": null
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你收起仙剑，谨慎地离开祭坛。",
-                            "choices": [
-                                {
-                                    "text": "探索周围",
-                                    "result": "你发现了一个隐藏的洞穴。",
-                                    "nextPartIndex": 45
-                                },
-                                {
-                                    "text": "离开此地",
-                                    "result": "你决定不再冒险，退出秘境。",
-                                    "nextPartIndex": null
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你开始修炼紫玄诀，感受到体内灵力的巨大提升。",
-                            "choices": [
-                                {
-                                    "text": "继续深入秘境",
-                                    "result": "实力增强的你，决定挑战更大的机缘。",
-                                    "nextPartIndex": 46
-                                },
-                                {
-                                    "text": "退出秘境",
-                                    "result": "你决定返回宗门，消化所得。",
-                                    "nextPartIndex": null
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你将秘籍收起，准备以后慢慢研究。",
-                            "choices": [
-                                {
-                                    "text": "离开此地",
-                                    "result": "你离开了宫殿，继续探索。",
-                                    "nextPartIndex": 47
-                                },
-                                {
-                                    "text": "寻找其他宝物",
-                                    "result": "你对其他宝物心存期待。",
-                                    "nextPartIndex": 37
-                                }
-                            ]
-                        },
-                        {
-                            "text": "洞穴内有一座古老的炼丹炉，炉火尚未熄灭。",
-                            "choices": [
-                                {
-                                    "text": "检查炼丹炉",
-                                    "result": "你找到了一炉刚炼制完成的丹药。",
-                                    "reward": {
-                                        "item": ["高阶丹药 x5"],
-                                        "money": 500
-                                    },
-                                    "nextPartIndex": 48
-                                },
-                                {
-                                    "text": "离开洞穴",
-                                    "result": "你觉得此地不宜久留。",
-                                    "nextPartIndex": 36
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你离开了宫殿，发现附近有一座古老的祭坛。",
-                            "choices": [
-                                {
-                                    "text": "前往祭坛",
-                                    "result": "祭坛上似乎有重要的东西。",
-                                    "nextPartIndex": 24
-                                },
-                                {
-                                    "text": "远离祭坛",
-                                    "result": "你感觉那里充满危险，决定离开。",
-                                    "nextPartIndex": 47
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你获得了大量的修炼资源，修为大增。",
-                            "choices": [
-                                {
-                                    "text": "继续探索宫殿",
-                                    "result": "宫殿中似乎还有更多秘密。",
-                                    "nextPartIndex": 38
-                                },
-                                {
-                                    "text": "离开宫殿",
-                                    "result": "你决定离开，寻找其他机缘。",
-                                    "nextPartIndex": 49
-                                }
-                            ]
-                        },
-                        {
-                            "text": "密室中有一颗闪耀着紫光的珠子，周围布满了复杂的阵法。",
-                            "choices": [
-                                {
-                                    "text": "尝试破解阵法",
-                                    "result": "你成功获取了紫玄灵珠。",
-                                    "reward": {
-                                        "item": ["紫玄灵珠"],
-                                        "cultivation": 200
-                                    },
-                                    "nextPartIndex": 50
-                                },
-                                {
-                                    "text": "放弃珠子，离开密室",
-                                    "result": "你觉得风险太大，选择了放弃。",
-                                    "nextPartIndex": 40
-                                }
-                            ]
-                        },
-                        {
-                            "text": "实力大增的你，来到了一条深不见底的峡谷。",
-                            "choices": [
-                                {
-                                    "text": "跳入峡谷",
-                                    "result": "你发现了隐藏的秘境。",
-                                    "nextPartIndex": 51
-                                },
-                                {
-                                    "text": "绕过峡谷",
-                                    "result": "你继续前行，寻找其他机缘。",
-                                    "nextPartIndex": 52
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你找到了一炉高阶丹药，感到喜出望外。",
-                            "choices": [
-                                {
-                                    "text": "服用丹药",
-                                    "result": "你的修为得到了提升。",
-                                    "reward": {
-                                        "cultivation": 150
-                                    },
-                                    "nextPartIndex": 53
-                                },
-                                {
-                                    "text": "保存丹药",
-                                    "result": "你决定以后再服用。",
-                                    "item": ["高阶丹药 x5"],
-                                    "nextPartIndex": 36
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你来到了一片花海，花香四溢，令人心旷神怡。",
-                            "choices": [
-                                {
-                                    "text": "采摘灵花",
-                                    "result": "你获得了稀有的灵花。",
-                                    "reward": {
-                                        "item": ["稀有灵花 x3"]
-                                    },
-                                    "nextPartIndex": 54
-                                },
-                                {
-                                    "text": "继续前行",
-                                    "result": "你欣赏了一番，继续冒险。",
-                                    "nextPartIndex": 43
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你成功获得了紫玄灵珠，感受到无比强大的灵力。",
-                            "choices": [
-                                {
-                                    "text": "吸收紫玄灵珠",
-                                    "result": "你的修为突破了一个大境界。",
-                                    "reward": {
-                                        "cultivation": 250
-                                    },
-                                    "nextPartIndex": 55
-                                },
-                                {
-                                    "text": "保存灵珠",
-                                    "result": "你决定以后再吸收。",
-                                    "item": ["紫玄灵珠"],
-                                    "nextPartIndex": 40
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你继续深入秘境，发现了更多的宝物和机缘。",
-                            "choices": [
-                                {
-                                    "text": "尝试突破境界",
-                                    "result": "你冲击境界，成功晋升。",
-                                    "reward": {
-                                        "cultivation": 300,
-                                        "equipment": "玄天宝甲"
-                                    },
-                                    "nextPartIndex": null
-                                },
-                                {
-                                    "text": "稳固修为",
-                                    "result": "你决定先巩固当前的实力。",
-                                    "nextPartIndex": 40
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你继续前行，来到了一片沙漠，炎热难耐。",
-                            "choices": [
-                                {
-                                    "text": "深入沙漠",
-                                    "result": "你发现了一个绿洲。",
-                                    "nextPartIndex": 56
-                                },
-                                {
-                                    "text": "绕回原路",
-                                    "result": "你选择不冒险，返回之前的路径。",
-                                    "nextPartIndex": 52
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你发现前方有一座宏伟的宫殿，门口有两座栩栩如生的石狮子。",
-                            "choices": [
-                                {
-                                    "text": "进入宫殿",
-                                    "result": "你发现了更多的宝物和秘籍。",
-                                    "nextPartIndex": 57
-                                },
-                                {
-                                    "text": "观察石狮子",
-                                    "result": "石狮子似乎蕴含着某种机关。",
-                                    "nextPartIndex": 58
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你进入绿洲，发现了一棵结满灵果的树。",
-                            "choices": [
-                                {
-                                    "text": "采摘灵果",
-                                    "result": "你获得了珍贵的灵果。",
-                                    "reward": {
-                                        "item": ["灵果 x5"]
-                                    },
-                                    "nextPartIndex": 59
-                                },
-                                {
-                                    "text": "休息一会儿",
-                                    "result": "你恢复了体力和灵力。",
-                                    "healthChange": 50,
-                                    "nextPartIndex": 59
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你触动了石狮子的机关，被传送到了一个未知的区域。",
-                            "choices": [
-                                {
-                                    "text": "探索未知区域",
-                                    "result": "你发现了一个神秘的宝库。",
-                                    "nextPartIndex": 60
-                                },
-                                {
-                                    "text": "寻找回去的路",
-                                    "result": "你迷失在了迷宫般的通道中。",
-                                    "nextPartIndex": 61
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你在宝库中找到了传说中的神兵利器。",
-                            "choices": [
-                                {
-                                    "text": "拿起神兵",
-                                    "result": "你的实力得到极大提升。",
-                                    "reward": {
-                                        "equipment": "神兵——天穹之刃",
-                                        "cultivation": 500
-                                    },
-                                    "nextPartIndex": null
-                                },
-                                {
-                                    "text": "不动神兵",
-                                    "result": "你感到此物非同小可，选择离开。",
-                                    "nextPartIndex": 62
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你在迷宫中走了许久，终于找到了出口。",
-                            "choices": [
-                                {
-                                    "text": "离开宫殿",
-                                    "result": "你决定不再冒险，退出秘境。",
-                                    "nextPartIndex": null
-                                },
-                                {
-                                    "text": "继续探索",
-                                    "result": "你对秘境的深处充满了好奇。",
-                                    "nextPartIndex": 63
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你在沙漠中行走，突然遭遇了一群沙虫的袭击。",
-                            "choices": [
-                                {
-                                    "text": "与沙虫战斗",
-                                    "result": "你击败了沙虫，获取了沙虫的材料。",
-                                    "reward": {
-                                        "item": ["沙虫材料"],
-                                        "cultivation": 70
-                                    },
-                                    "nextPartIndex": 64
-                                },
-                                {
-                                    "text": "避开沙虫",
-                                    "result": "你成功避开了危险，继续前行。",
-                                    "nextPartIndex": 65
-                                }
-                            ]
-                        },
-                        {
-                            "text": "你感到收获颇丰，决定结束此次秘境之行，返回宗门。",
-                            "choices": [
-                                {
-                                    "text": "退出秘境",
-                                    "result": "你带着满满的收获，回到了宗门。",
-                                    "reward": {
-                                        "cultivation": 50000,
-                                        "money": 100000,
-                                        "equipment": "紫玄仙剑"
-                                    },
-                                    "nextPartIndex": null
-                                }
-                            ]
-                        }
-                    ]
+    "name": "锁妖塔秘境",
+    "parts": [
+        {
+            "id": 1,
+            "text": "你是《仙剑奇侠传》中的一名修仙者，机缘巧合之下，你听闻了一座神秘的锁妖塔，据说塔内封印着无数妖魔，也藏有上古遗留下来的珍宝与秘籍。传说中，能成功通过锁妖塔考验的人，将获得前人无法想象的力量。于是，你决定前往一探究竟。",
+            "choices": [
+                {
+                    "text": "立即前往锁妖塔",
+                    "result": "你整理行装，朝着锁妖塔的方向出发。",
+                    "nextPartIndex": 2
                 },
+                {
+                    "text": "先准备好充足的丹药再出发",
+                    "result": "你花时间准备了大量的丹药，以备不时之需。",
+                    "reward": {
+                        "item": ["回元丹 x5", "补血散 x5"]
+                    },
+                    "nextPartIndex": 2
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "text": "经过数日跋涉，你终于来到了锁妖塔的入口。塔身高耸入云，周围弥漫着一股阴森的气息。入口处有一块石碑，上书'锁妖塔，入者慎之'。你深吸一口气，迈入了塔内。",
+            "choices": [
+                {
+                    "text": "勇敢踏入塔内",
+                    "result": "你步入塔内，发现四周一片昏暗。",
+                    "nextPartIndex": 3
+                },
+                {
+                    "text": "环顾四周，寻找线索",
+                    "result": "你在入口附近仔细观察，发现了一本古老的手札。",
+                    "item": ["古老的手札"],
+                    "nextPartIndex": 4
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "text": "进入塔内，你感到一阵寒意。突然，一只低级妖怪从黑暗中扑来！",
+            "choices": [
+                {
+                    "text": "拔剑迎战",
+                    "result": "你轻松击败了妖怪，获得了一些经验。",
+                    "reward": {
+                        "cultivation": 20,
+                        "item": ["妖怪之牙"]
+                    },
+                    "nextPartIndex": 5
+                },
+                {
+                    "text": "转身逃跑",
+                    "result": "你错失了锻炼的机会。",
+                    "nextPartIndex": 5
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "text": "手札中记录了锁妖塔的隐藏机关和一些前人留下的经验。你了解到塔内共有七层，每一层都有不同的挑战。",
+            "choices": [
+                {
+                    "text": "仔细阅读手札",
+                    "result": "你获得了大量有用的信息。",
+                    "reward": {
+                        "cultivation": 30
+                    },
+                    "nextPartIndex": 5
+                },
+                {
+                    "text": "将手札收进口袋",
+                    "result": "你决定以后再研究。",
+                    "nextPartIndex": 5
+                }
+            ]
+        },
+        {
+            "id": 5,
+            "text": "第一层相对简单，你顺利通过，来到第二层。这里的环境变得更加诡异，四周充满了迷雾，让人难以辨别方向。",
+            "choices": [
+                {
+                    "text": "继续前进",
+                    "result": "你坚定地向前走，希望尽快找到出口。",
+                    "nextPartIndex": 6
+                },
+                {
+                    "text": "使用手札寻找线索",
+                    "condition": {
+                        "item": "古老的手札"
+                    },
+                    "result": "根据手札的指引，你找到了通往下一层的快捷路径。",
+                    "nextPartIndex": 8
+                }
+            ]
+        },
+        {
+            "id": 6,
+            "text": "迷雾中，你听到有人在呼救。循声望去，发现一名女子被困在妖怪的包围中。",
+            "choices": [
+                {
+                    "text": "出手相救",
+                    "result": "你冲上前去，帮助女子击退了妖怪。",
+                    "reward": {
+                        "cultivation": 50,
+                        "item": ["神秘女子的谢礼"]
+                    },
+                    "nextPartIndex": 7
+                },
+                {
+                    "text": "置之不理，继续前进",
+                    "result": "你无视了呼救声，独自前行。",
+                    "nextPartIndex": 8
+                }
+            ]
+        },
+        {
+            "id": 7,
+            "text": "女子感激地对你道谢，告诉你她的名字叫做灵儿。她表示愿意与你同行，共同探索锁妖塔。你是否愿意接受她的同行请求？",
+            "choices": [
+                {
+                    "text": "接受她的请求",
+                    "result": "你们结伴而行，彼此有了照应。",
+                    "nextPartIndex": 9
+                },
+                {
+                    "text": "婉言拒绝，独自前行",
+                    "result": "你决定独自冒险，避免拖累。",
+                    "nextPartIndex": 8
+                }
+            ]
+        },
+        {
+            "id": 8,
+            "text": "你继续前进，终于找到了通往第三层的阶梯。在你准备踏上阶梯时，一只巨大的妖兽突然出现，挡住了你的去路。",
+            "choices": [
+                {
+                    "text": "立即战斗",
+                    "result": "你与妖兽展开了激烈的战斗。",
+                    "nextPartIndex": 10
+                },
+                {
+                    "text": "寻找妖兽的弱点",
+                    "result": "你仔细观察，试图找到战胜妖兽的办法。",
+                    "nextPartIndex": 11
+                }
+            ]
+        },
+        {
+            "id": 9,
+            "text": "有了灵儿的帮助，你们的行动更加顺利。她熟知锁妖塔的一些秘密，能够帮助你避开许多危险。",
+            "choices": [
+                {
+                    "text": "询问灵儿的来历",
+                    "result": "灵儿告诉你，她是苗疆的公主，来此寻找解救族人的方法。",
+                    "nextPartIndex": 12
+                },
+                {
+                    "text": "专注于眼前的挑战",
+                    "result": "你们默契配合，继续前进。",
+                    "nextPartIndex": 13
+                }
+            ]
+        },
+        {
+            "id": 10,
+            "text": "妖兽力量强大，你感到有些吃力。",
+            "choices": [
+                {
+                    "text": "使用全力攻击",
+                    "result": "你集中全部力量，一举击败了妖兽。",
+                    "reward": {
+                        "cultivation": 80,
+                        "item": ["妖兽之鳞"]
+                    },
+                    "nextPartIndex": 14
+                },
+                {
+                    "text": "选择防守，寻找机会",
+                    "result": "你耐心等待，最终找到破绽，将妖兽击败。",
+                    "reward": {
+                        "cultivation": 70,
+                        "item": ["妖兽之角"]
+                    },
+                    "nextPartIndex": 14
+                }
+            ]
+        },
+        {
+            "id": 11,
+            "text": "通过观察，你发现妖兽有一个致命弱点。",
+            "choices": [
+                {
+                    "text": "攻击弱点",
+                    "result": "你精准地攻击了妖兽的弱点，轻松将其击败。",
+                    "reward": {
+                        "cultivation": 100,
+                        "item": ["妖兽之魂"]
+                    },
+                    "nextPartIndex": 14
+                },
+                {
+                    "text": "用计引诱妖兽入陷阱",
+                    "result": "你利用地形，成功困住了妖兽。",
+                    "reward": {
+                        "cultivation": 90,
+                        "equipment": "妖兽之牙剑"
+                    },
+                    "nextPartIndex": 14
+                }
+            ]
+        },
+        {
+            "id": 12,
+            "text": "得知她的身份后，你对她的勇气感到佩服。你决定帮助她一起寻找解救族人的方法。",
+            "choices": [
+                {
+                    "text": "誓要帮助灵儿",
+                    "result": "灵儿对你充满感激之情。",
+                    "nextPartIndex": 13
+                },
+                {
+                    "text": "继续保持同行",
+                    "result": "你们默契配合，继续前进。",
+                    "nextPartIndex": 13
+                }
+            ]
+        },
+        {
+            "id": 13,
+            "text": "在灵儿的指引下，你们顺利到达了第三层。这里的压力更大，但有了她的帮助，你们如鱼得水。",
+            "choices": [
+                {
+                    "text": "继续探索",
+                    "result": "你们决定挑战更高的层数。",
+                    "nextPartIndex": 15
+                },
+                {
+                    "text": "暂时休息，恢复体力",
+                    "result": "你们找了一处安全的地方，稍作休息。",
+                    "healthChange": 30,
+                    "nextPartIndex": 16
+                }
+            ]
+        },
+        {
+            "id": 14,
+            "text": "击败妖兽后，你获得了通往第三层的钥匙。你是否要继续前进？",
+            "choices": [
+                {
+                    "text": "继续前进",
+                    "result": "你踏上了通往第三层的阶梯。",
+                    "nextPartIndex": 17
+                },
+                {
+                    "text": "暂时休息，恢复体力",
+                    "result": "你在原地休息，准备迎接更大的挑战。",
+                    "healthChange": 20,
+                    "nextPartIndex": 17
+                }
+            ]
+        },
+        {
+            "id": 15,
+            "text": "第四层的妖气更重，你们需要更加小心。突然，一个巨大阴影出现在你们面前。",
+            "choices": [
+                {
+                    "text": "立即攻击",
+                    "result": "你们毫不犹豫地展开了攻击。",
+                    "nextPartIndex": 18
+                },
+                {
+                    "text": "尝试与之交谈",
+                    "result": "灵儿上前与阴影交谈，试图化解敌意。",
+                    "nextPartIndex": 19
+                }
+            ]
+        },
+        {
+            "id": 16,
+            "text": "休息过后，你们精神焕发，继续向上攀登。",
+            "choices": [
+                {
+                    "text": "直奔第四层",
+                    "result": "你们毅然踏上了通往第四层的阶梯。",
+                    "nextPartIndex": 15
+                },
+                {
+                    "text": "探索第三层的秘密",
+                    "result": "你们在第三层仔细探索，发现了隐藏的宝箱。",
+                    "reward": {
+                        "item": ["神秘宝箱"]
+                    },
+                    "nextPartIndex": 20
+                }
+            ]
+        },
+        {
+            "id": 17,
+            "text": "第三层的挑战更加艰巨，你需要更加谨慎。",
+            "choices": [
+                {
+                    "text": "小心前进",
+                    "result": "你保持警惕，避免了许多陷阱。",
+                    "nextPartIndex": 21
+                },
+                {
+                    "text": "加快脚步，争取时间",
+                    "result": "你加快步伐，试图赶在日落前通过。",
+                    "nextPartIndex": 22
+                }
+            ]
+        },
+        {
+            "id": 18,
+            "text": "阴影化作一只巨大的妖怪，力量惊人。你们陷入了苦战。",
+            "choices": [
+                {
+                    "text": "全力以赴，合力击败妖怪",
+                    "result": "你们最终战胜了妖怪。",
+                    "reward": {
+                        "cultivation": 150,
+                        "equipment": "封妖之剑"
+                    },
+                    "nextPartIndex": 23
+                },
+                {
+                    "text": "寻找机会逃脱",
+                    "result": "你们利用地形，成功逃离。",
+                    "nextPartIndex": 24
+                }
+            ]
+        },
+        {
+            "id": 19,
+            "text": "阴影竟然是一个被封印的前辈仙人，他被困于此多年。灵儿的纯净之心打动了他。",
+            "choices": [
+                {
+                    "text": "请求指点",
+                    "result": "前辈仙人传授了你们一些高级法术。",
+                    "reward": {
+                        "cultivation": 200,
+                        "item": ["高级法术卷轴"]
+                    },
+                    "nextPartIndex": 23
+                },
+                {
+                    "text": "帮助他解除封印",
+                    "result": "你们合力破除封印，仙人得以重获自由。",
+                    "reward": {
+                        "cultivation": 250,
+                        "equipment": "仙人之袍"
+                    },
+                    "nextPartIndex": 23
+                }
+            ]
+        },
+        {
+            "id": 20,
+            "text": "宝箱中装有一颗神秘的珠子，散发着淡淡的光芒。",
+            "choices": [
+                {
+                    "text": "收起珠子，继续前进",
+                    "result": "你将珠子小心收藏。",
+                    "item": ["神秘珠子"],
+                    "nextPartIndex": 15
+                },
+                {
+                    "text": "尝试激活珠子",
+                    "result": "珠子突然爆发出强烈的光芒，你感到力量涌入体内。",
+                    "reward": {
+                        "cultivation": 120
+                    },
+                    "nextPartIndex": 15
+                }
+            ]
+        },
+        {
+            "id": 21,
+            "text": "你的谨慎让你避开了许多危险，顺利到达了第四层。",
+            "choices": [
+                {
+                    "text": "继续保持谨慎",
+                    "result": "你在第四层也小心翼翼。",
+                    "nextPartIndex": 25
+                },
+                {
+                    "text": "放松警惕",
+                    "result": "你有些放松，忽略了周围的危险。",
+                    "nextPartIndex": 26
+                }
+            ]
+        },
+        {
+            "id": 22,
+            "text": "你的急躁让你陷入了陷阱，受了些伤。",
+            "choices": [
+                {
+                    "text": "调整心态，继续前进",
+                    "result": "你吸取教训，变得谨慎起来。",
+                    "healthChange": -20,
+                    "nextPartIndex": 25
+                },
+                {
+                    "text": "寻找出口，退出塔外",
+                    "result": "你决定放弃，离开锁妖塔。",
+                    "nextPartIndex": null
+                }
+            ]
+        },
+        {
+            "id": 23,
+            "text": "你们成功通过了第四层的考验，来到了第五层。这里充满了幻象，让人分不清真实与虚幻。",
+            "choices": [
+                {
+                    "text": "依靠心神定力，辨别真假",
+                    "result": "你抵御住了幻象的诱惑。",
+                    "nextPartIndex": 27
+                },
+                {
+                    "text": "借助灵儿的力量",
+                    "condition": {
+                        "companion": "灵儿"
+                    },
+                    "result": "灵儿的仙术帮助你们看穿了幻象。",
+                    "nextPartIndex": 27
+                }
+            ]
+        },
+        {
+            "id": 24,
+            "text": "你们成功逃脱，但错过了获得宝物的机会。",
+            "choices": [
+                {
+                    "text": "继续前进",
+                    "result": "你们踏上了通往第五层的阶梯。",
+                    "nextPartIndex": 27
+                },
+                {
+                    "text": "返回寻找宝物",
+                    "result": "你们决定冒险，回去寻找机会。",
+                    "nextPartIndex": 18
+                }
+            ]
+        },
+        {
+            "id": 25,
+            "text": "你的谨慎再次起到了作用，你在第五层也避免了许多危险。",
+            "choices": [
+                {
+                    "text": "继续攀登",
+                    "result": "你对自己的判断更加自信。",
+                    "nextPartIndex": 28
+                },
+                {
+                    "text": "寻找隐藏的宝物",
+                    "result": "你在角落里发现了一件宝物。",
+                    "reward": {
+                        "equipment": "隐身披风"
+                    },
+                    "nextPartIndex": 28
+                }
+            ]
+        },
+        {
+            "id": 26,
+            "text": "你的放松让你陷入了幻象，迷失了方向。",
+            "choices": [
+                {
+                    "text": "努力清醒过来",
+                    "result": "你恢复了理智，但浪费了不少时间。",
+                    "nextPartIndex": 27
+                },
+                {
+                    "text": "随波逐流，顺其自然",
+                    "result": "你陷入了更深的幻境，难以自拔。",
+                    "nextPartIndex": null
+                }
+            ]
+        },
+        {
+            "id": 27,
+            "text": "你成功通过了幻象的考验，来到了第六层。这里的妖气已经浓郁得化不开。",
+            "choices": [
+                {
+                    "text": "鼓起勇气，继续前进",
+                    "result": "你毫不畏惧，坚定地向前走。",
+                    "nextPartIndex": 29
+                },
+                {
+                    "text": "稍作休息，恢复状态",
+                    "result": "你决定整理一下，准备迎接更大的挑战。",
+                    "healthChange": 40,
+                    "nextPartIndex": 29
+                }
+            ]
+        },
+        {
+            "id": 28,
+            "text": "你的坚持让你距离终点越来越近。第六层的挑战更加严峻。",
+            "choices": [
+                {
+                    "text": "全力以赴，迎接挑战",
+                    "result": "你做好了充分的准备。",
+                    "nextPartIndex": 29
+                },
+                {
+                    "text": "退缩，考虑退出塔外",
+                    "result": "你犹豫不决，是否要继续前进。",
+                    "nextPartIndex": 30
+                }
+            ]
+        },
+        {
+            "id": 29,
+            "text": "在第六层，你遇到了锁妖塔的守护者，他阻止你继续前进。",
+            "choices": [
+                {
+                    "text": "与守护者战斗",
+                    "result": "一场激烈的战斗之后，你成功击败了守护者。",
+                    "reward": {
+                        "cultivation": 300,
+                        "equipment": "守护者之盾"
+                    },
+                    "nextPartIndex": 31
+                },
+                {
+                    "text": "说服守护者放行",
+                    "result": "你以理服人，守护者被你的诚意打动。",
+                    "nextPartIndex": 31
+                }
+            ]
+        },
+        {
+            "id": 30,
+            "text": "你最终决定放弃挑战，离开了锁妖塔。",
+            "choices": [
+                {
+                    "text": "退出锁妖塔",
+                    "result": "你带着遗憾离开了这里。",
+                    "nextPartIndex": null
+                }
+            ]
+        },
+        {
+            "id": 31,
+            "text": "你终于来到了第七层，也是最后一层。这里光芒耀眼，似乎藏着巨大的秘密。",
+            "choices": [
+                {
+                    "text": "探索第七层的秘密",
+                    "result": "你发现了一本上古秘籍。",
+                    "reward": {
+                        "item": ["上古秘典"],
+                        "cultivation": 500
+                    },
+                    "nextPartIndex": 32
+                },
+                {
+                    "text": "寻找锁妖塔的核心",
+                    "result": "你发现了锁妖塔的力量源泉。",
+                    "nextPartIndex": 33
+                }
+            ]
+        },
+        {
+            "id": 32,
+            "text": "通过阅读秘籍，你的实力得到了极大的提升。",
+            "choices": [
+                {
+                    "text": "尝试突破境界",
+                    "result": "你成功突破了自身的桎梏。",
+                    "reward": {
+                        "cultivation": 800,
+                        "equipment": "上古之剑"
+                    },
+                    "nextPartIndex": null
+                },
+                {
+                    "text": "继续探索其他秘密",
+                    "result": "你对其他未知的领域充满了好奇。",
+                    "nextPartIndex": 33
+                }
+            ]
+        },
+        {
+            "id": 33,
+            "text": "你发现锁妖塔的核心竟然是一颗被封印的魔珠。",
+            "choices": [
+                {
+                    "text": "尝试解开封印",
+                    "result": "你成功解除了封印，但魔珠的力量过于强大。",
+                    "nextPartIndex": 34
+                },
+                {
+                    "text": "将魔珠封印得更紧",
+                    "result": "你加强了封印，防止魔珠的力量外泄。",
+                    "reward": {
+                        "cultivation": 600,
+                        "equipment": "封印之符"
+                    },
+                    "nextPartIndex": null
+                }
+            ]
+        },
+        {
+            "id": 34,
+            "text": "魔珠的力量冲击着你的身体，你感到自己快要失去控制。",
+            "choices": [
+                {
+                    "text": "抵抗魔珠的侵蚀",
+                    "result": "你成功驾驭了魔珠的力量。",
+                    "reward": {
+                        "cultivation": 1000,
+                        "equipment": "魔珠之力"
+                    },
+                    "nextPartIndex": null
+                },
+                {
+                    "text": "放弃抵抗，被魔珠吞噬",
+                    "result": "你被魔珠彻底控制，迷失了自我。",
+                    "nextPartIndex": null
+                }
+            ]
+        }
+    ]
+},
 
                 2: {
                     "name": "太古仙境探秘",
@@ -1101,7 +930,7 @@ export default {
                                 "money": 500,
                                 "item": "稀有道具【仙境之钥】"
                             },
-                            "nextPartIndex": null
+                            "nextPartIndex": 0
                         }
                     ]
                 }
@@ -1139,6 +968,7 @@ export default {
         }
     },
     methods: {
+   
         makeChoice(choice) {
             this.logs.push(`你选择了${choice.text}，${choice.result}`);
 
@@ -1188,10 +1018,19 @@ export default {
             if (choice.healthChange) {
                 this.$store.player.health += choice.healthChange;
             }
-            this.currentIndex = choice.nextPartIndex;
+             // 检查nextPartIndex是否为null
+    if (choice.nextPartIndex === null) {
+        this.currentIndex = 0;
+    } else {
+        this.currentIndex = choice.nextPartIndex-1;
+    }
+          
             this.$nextTick(() => {
-                this.$refs.scrollbar.wrapRef.scrollTop = this.$refs.scrollbar.wrapRef.scrollHeight;
-            });
+            const scrollbarRef = this.$refs.scrollbar?.wrapRef;
+            if (scrollbarRef) {
+                scrollbarRef.scrollTop = scrollbarRef.scrollHeight;
+            }
+        });
         }
     }
 };

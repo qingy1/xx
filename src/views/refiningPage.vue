@@ -496,7 +496,7 @@ export default {
     stopMining() {
       this.isMining = false;
       clearInterval(this.miningInterval);
-      this.completeMining();
+  //    this.completeMining();
     },
     completeMining() {
       const miningResults = this.calculateMiningResults();
