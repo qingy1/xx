@@ -3,7 +3,7 @@
     <el-tabs v-model="activeTab">
       <el-tab-pane label="炼器" name="refining">
         <div class="refining-level">
-          <h3>炼器等级: {{ refiningLevel }}</h3>
+          <h3>{{ $refining[refiningLevel-1]}}炼器师</h3>
           <el-progress :percentage="refiningExpPercentage" :format="formatRefiningExp"></el-progress>
         </div>
         <div class="refining-container">
@@ -28,7 +28,7 @@
                 </tag>
               </template>
               <template v-else>
-                <el-progress type="circle" :percentage="refiningProgress"></el-progress>
+                <el-progress type="circle" :percentage="Number(refiningProgress.toFixed(0))"></el-progress>
               </template>
             </div>
             <el-button type="primary" @click="startRefining" :disabled="!canRefine || isRefining">
@@ -110,7 +110,7 @@
       <el-tab-pane label="矿场" name="mining">
         <div class="mining-container">
           <div class="mining-info">
-            <h3>矿场等级: {{ miningLevel }}</h3>
+            <h3> {{  $refining[miningLevel-1] }}采矿师</h3>
             <el-progress :percentage="miningExpPercentage" :format="formatMiningExp"></el-progress>
           </div>
           <div class="ore-list">
@@ -124,7 +124,7 @@
                 <p>点击开始挖矿</p>
               </template>
               <template v-else>
-                <el-progress type="circle" :percentage="miningProgress"></el-progress>
+                <el-progress type="circle" :percentage="Number(miningProgress.toFixed(2))"></el-progress>
               </template>
             </div>
             <el-button type="primary" @click="toggleMining">
@@ -192,25 +192,27 @@ export default {
       return this.$store.player.materials;
     },
     refiningLevel() {
-      return Math.floor(Math.sqrt(this.player.refiningExp / 1000)) + 1;
+      return Math.min(9, Math.floor(Math.sqrt(this.player.refiningExp / 1000)) + 1);
     },
     refiningExpPercentage() {
       const nextLevelExp = this.calculateNextLevelExp(this.refiningLevel);
       const currentLevelExp = this.calculateNextLevelExp(this.refiningLevel - 1);
-      return ((this.player.refiningExp - currentLevelExp) / (nextLevelExp - currentLevelExp)) * 100;
+      const per = (this.player.refiningExp - currentLevelExp) / (nextLevelExp - currentLevelExp)* 100;
+      return Math.min(per, 100);
     },
     miningLevel() {
-      return Math.floor(Math.sqrt(this.player.miningExp / 1000)) + 1;
+      return Math.min(9, Math.floor(Math.sqrt(this.player.miningExp / 1000)) + 1);
     },
     miningExpPercentage() {
       const nextLevelExp = this.calculateNextLevelExp(this.miningLevel);
       const currentLevelExp = this.calculateNextLevelExp(this.miningLevel - 1);
-      return ((this.player.miningExp - currentLevelExp) / (nextLevelExp - currentLevelExp)) * 100;
+      const per = (this.player.miningExp - currentLevelExp) / (nextLevelExp - currentLevelExp)* 100;
+      return Math.min(per, 100);
     },
     canStartTargetedRefine() {
       return this.selectedForTargetedRefine &&
         this.player.materials.find(m => m.name === '陨铁')?.count >= this.requiredMeteoriteIron;
-    },
+    }
   },
   methods: {
     selectEquipmentForRefine(equipment) {
@@ -416,11 +418,11 @@ export default {
       const qualityExpMap = {
         'info': 1,
         'success': 1,
-        'primary': 2,
+        'primary': 1,
         'purple': 3,
         'warning': 5,
         'danger': 10,
-        'pink': 20
+        'pink': 10
       };
 
       let totalExp = this.refinedEquipments.reduce((acc, equipment) => {
@@ -428,7 +430,7 @@ export default {
       }, 0);
       this.player.refiningExp += totalExp;
       const oldLevel = this.refiningLevel;
-      const newLevel = Math.floor(Math.sqrt(this.player.refiningExp / 1000)) + 1;
+      const newLevel = Math.min(9, Math.floor(Math.sqrt(this.player.refiningExp / 1000)) + 1);
 
       if (newLevel > oldLevel) {
         this.$notifys({ title: '炼器等级提升', message: `炼器等级提升到${newLevel}级！` });
@@ -487,7 +489,6 @@ export default {
       this.miningInterval = setInterval(() => {
         this.miningTime++;
         this.miningProgress = (this.miningTime % 60) / 60 * 100;
-
         if (this.miningTime % 60 === 0) {
           this.completeMining();
         }
@@ -540,7 +541,7 @@ export default {
       this.player.miningExp += expGained;
 
       const oldLevel = this.miningLevel;
-      const newLevel = Math.floor(Math.sqrt(this.player.miningExp / 1000)) + 1;
+      const newLevel = Math.min(9, Math.floor(Math.sqrt(this.player.miningExp / 1000)) + 1);
 
       if (newLevel > oldLevel) {
         this.$notifys({ title: '挖矿等级提升', message: `挖矿等级提升到${newLevel}级！` });

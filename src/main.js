@@ -83,6 +83,7 @@ app.config.globalProperties.$levels = {
     success: '玄阶',
     warning: '帝阶',
 };
+app.config.globalProperties.$refining = ['初级','中级','高级','大师级','宗师级','仙级','神级','超神级','圣级']
 
 app.config.globalProperties.$propItemNames = {
     money: { name: '灵石', desc: '可以通过分解获得装备获得' },
